@@ -1,0 +1,367 @@
+Table of Contents:
+    [0x00000001] - Usage
+    [0x00000002] - Installation Options
+    [0x00000003] - Things to know & post-installation
+    [0x00000013] - Rootkit functionality. Hiding, anti-detection, persistence.
+    [0x00000023] - How owner shells work
+    [0x00000033] - accept() backdoor
+    [0x00000043] - PAM backdoor information, usage & hooked libc & libpam functions
+    [0x00000053] - execve() commands
+    [0x00000004] - Written entries
+    [0x00000005] - List of present bugs (and solutions to fixed bugs, when fixed)
+    [0x00000006] - Public key
+
+[0x00000001]
+    Usage:
+        ./install.sh
+
+[0x00000002]
+    ./install.sh [OPTIONS]
+        --cli
+            For users who would either rather use a regular command line interface for installation, or for users who just don't have the
+            access to dialog required for the installation script's tui.
+
+[0x00000003]
+	Post install:
+		[0x00000013]
+			File hiding:
+				By default, /etc/ld.so.preload and your install directory are hidden from userland.
+				vlany hooks readdir() and readdir64() to hide files from ls calls.
+
+				AS OF 4/21/2016 6:42 AM HONG KONG TIME, VLANY NOW ALSO USES EXTENDED FILE ATTRIBUTES TO HIDE ROOTKIT FILES.
+				At some point, I'll migrate over to extended attributes completely. But the process hiding system will
+				obviously have to remain GID based, since the procfs doesn't support extended file attributes.
+				The ext2, ext3, ext4, JFS, Squashfs, Yaffs2, ReiserFS, XFS, Btrfs, OrangeFS, Lustre, OCFS2 1.6 and F2FS
+                filesystems support extended attributes.
+                I was having a certain discussion with someone over Discord, and they told me that extended attributes are
+                a very viable solution to hide files behind a userland rootkit. To begin with, I just made a simple
+                program to loop through files in a directory and output any extended attributes on the files. Then I assigned
+                a custom attribute to some empty files, and made the program check if any files in a directory had my custom
+                attribute assigned to them, and if so, output signifying that my attribute is present would pop up.
+                So credits to that individual for the idea.
+
+                I provide a PoC on a github repo of mine which shows how extended attributes are used to hide files and directories in a rootkit.
+                http://github.com/mempodippy/cub3
+
+                JUNE 3, 2016: CHECK THE WRITTEN ENTRIES AT THE BOTTOM OF THIS FILE. VLANY NOW COMLETELY USES EXTENDED ATTRIBUTES FOR FILE HIDING.
+
+                After creating a new file or directory, you need to hide it by using the ./hide vlany command or else it'll still be visible.
+                You can also hide existing files or directories with this command.
+
+			Process hiding:
+				All processes spawned in an owner shell are hidden by the use of the magic GID.
+				For example, a user with the GID of 1337 spawning a bash shell will also give that bash shell process a GID of 1337. Simple enough
+				right? Let's say the magic GID is in fact 1337. A normal user spawning a bash shell will give that process a GID of, let's say, 1000.
+				So that's not a rootkit-related process. However, if a user with the magic GID spawns a bash shell, they'll give that process a GID of 1337.
+				vlany sees that the process has a GID of 1337, and therefore hides it from any regular user.
+
+				GID based process hiding is much more reliable than what Azazel attempted. Azazel relied on the contents of /proc/id/environ to determine if
+				a process is hidden or not by using the special environment variable. This works... but not for normal non-root users. If a normal user was to
+				view the running processes, they wouldn't have the correct permissions to open the cmdline entry for reading, and so the process would show up
+				anyway. Protecting the entire proc dir with a magic GID prevents any user, root or normal, from even opening the proc dir.
+
+			User hiding:
+				vlany hooks getutent(), getutxent(), and pututline() in order to hide backdoor user existence on the system. This only applies to the
+				PAM backdoor however, since the accept() backdoor relies on a reverse shell which inherits the permissions of whatever service you're connecting to.
+
+			Network hiding:
+                vlany hides connections from source ports of the PAM backdoor port, or any source ports between the accept low and high backdoor acception range.
+                Only one connection can be made at a time from the hidden ports. Being connected to the PAM backdoor under the hidden port and the accept backdoor
+                at the same time will cause one of the "hidden" ports to be visible. I'm uncertain of why this bug exists. But it's easily avoidable.
+				vlany now hooks libpcap functions to avoid network packet sniffing.
+				I'm currently working on hiding LXC container network interfaces from ifconfig and other similar utils.
+
+			LXC container:
+				The rootkit user has the choice of utilising the small utility in their hidden directory, called enter_lxc. It allows for on-the-fly
+				creation and destruction of hidden container environments. This file system is however, completely temporary, and will be destroyed
+				when the user types 'exit' to exit the container.
+				This small utility does also require the presence of liblxc, which can be installed from any lxc-dev packages or the likes.
+
+			Anti-Debug:
+				Derived from Azazel, I break the ptrace() function to prevent debugging. UNLIKE AZAZEL HOWEVER, I DON'T BRICK YOUR GOD DAMN BOX WITHOUT
+				YOUR CONSENT.
+                As of the replacement of the tui installation script, the only way to enable the ptrace bug is by setting the last value of argv to 1
+                instead of a 0 in the execution of config.py in install.sh. (Or by messing around with config.py, but that's more effort.)
+                Additionally, as of [some date here, I forgot the date] vlany now breaks any 'strings' calls to the rootkit's shared libraries.
+                Strings calls will still seem to work perfectly fine for any other binary.
+
+			Anti-Forensics:
+				By forging /proc/self/maps and /proc/self/smaps, I prevent users from tracing the rootkit shared library back to its hidden directory.
+				Although users cannot see the location of the shared library, they can however see that other libraries are being loaded, such as
+				libopenssl and libcrypt. A paranoid sysadmin could see this and wonder why their system is loading those libraries without them
+				asking ld to do so. Possibly a red flag, but even if they know this, there's not much they can do to remove the rootkit without a
+				complete image copy of the disk.
+                Additionally, by forging /proc/self/numa_maps, I hide the rootkit information (shared library path, most importantly) from calls to
+                this file.
+
+                If someone is eager to hunt for potential infections or general inconsistencies, they could compare the list of mapped addresses from
+                /proc/self/maps, /proc/self/smaps, and /proc/self/numa_maps and read the directory listing from /proc/self/map_files/.
+                READ WRITTEN ENTRY 5:June:2016 FOR MORE INFORMATION ON THIS THEORY.
+				----
+				Also by hooking execve(), I'm able to check if a user is attempting to run ldd to reveal all the current loaded shared libraries,
+				and if they are, I can unload vlany temporarily (see more about this in the next section) so that the rootkit's shared library isn't
+				shown anywhere, and then when ldd is done doing what it's doing, I can reload vlany into ld.so.preload.
+				The same applies to users who try to load their own shared library through use of LD_PRELOAD. Another advantage of hooking execve()
+				is that I can check for environment variables, and if a user is trying to set LD_AUDIT or LD_TRACE_LOADED_OBJECTS, I can also temporarily
+				hide again.
+
+			Persistent (re)installation & Anti-Detection:
+				Since the rootkit's shared library constructor and destructor gets called at the start and end of every process, I can persistently
+				check for possible inconsistencies in ld.so.preload, or if it's straight up missing from /etc/. By persistently doing these checks, I
+				can rewrite the shared library's path back to ld.so.preload should the file be inconsistent or missing so that vlany is incredibly difficult
+                to remove from the rooted box.
+				----
+				By using this same methodology, I can also temporarily unlink ld.so.preload during a process' runtime, and then rewrite ld.so.preload
+				once the process has finished executing. vlany checks if chkproc (a counterpart of chkrootkit), rkhunter, unhide, or ldd are being
+				executed, and if they are, vlany temporarily removes ld.so.preload so that these tools don't detect us and alert the sysadmin running
+				the tool. Theoretically, vlany can hide from literally anything by doing this.
+
+		[0x00000023]
+			Owner shells:
+				An owner shell in vlany is a shell which has permission to view rootkit files and processes. If you're reading this, then you'll
+				probably end up in an owner shell at some point. Owner shells can be triggered by being root AND having the environment variable 
+				defined by config.py set in /proc/self/environ by whatever means. Owner shells can also be triggered by logging in with a GID
+				pertaining to your magic GID defined by config.py too.
+				IN SHORT, AN OWNER SHELL CAN BE ACCESSED VIA THE ACCEPT() BACKDOOR OR PAM BACKDOOR. IT ALLOWS YOU TO DO EVERYTHING ROOT AND MORE.
+
+		[0x00000033]
+			accept() backdoor (somewhat deprecated):
+				Derived from Jynx2, this backdoor allows you to connect to any running service (such as sshd, apache, etc) via netcat to spawn a
+				/bin/sh shell by using your port range (LOW_PORT + HIGH_PORT) and password defined at runtime. Unlike Jynx2, vlany allows for plaintext
+				communications AND encrypted SSL communications via the accept() backdoor. Just make sure to restart the service you want to connect
+				to after installing vlany. To connect to the accept() backdoor using SSL, the service you're connecting to MUST be listening with
+				SSL, and you MUST enable the --ssl flag when running ncat to connect.
+                Additionally, unlike Jynx2, this implementation of the accept hook backdoor isn't trash.
+				----
+                p
+				The only function hooked for this backdoor is accept().
+                ----
+                At the end of install.sh, the script attempts to restart the ssh daemon in /etc/init.d if it exists.
+
+		[0x00000043]
+			PAM backdoor:
+				Backdoor that allows ssh/sftp connections. This backdoor is much superior than the accept() backdoor. Some functions that work
+				in this backdoor will /only/ work in this backdoor.
+				NOTES:
+					The 'UsePAM' line in the sshd_config file located in /etc/ssh must say 'yes' for this backdoor to work. By default it is
+					usually 'yes', but some sysadmin might manually change this to try to prevent PAM backdoors. If this is the case, install.sh will
+                    attempt to correct this.
+
+                    There's a script in 'misc/' called 'ssh.sh'. Use this to connect to your PAM backdoor under the hidden PAM port.
+                    Usage instructions for this script can be seen upon execution of the script.
+                    Connections to the PAM backdoor can also be made without this script, but your connection will be visible.
+
+                    Your backdoor password is hashed using SHA-512.
+				(I RECOMMEND YOU USE THIS BACKDOOR. PLEASE USE THIS BACKDOOR. USE IT.)
+
+			Hooked functions:
+				The required functions to hook for the PAM backdoor ar as follows:
+					getpwnam(), getpwnam_r(), getpwuid(), getspnam() - these are all standard libc functions.
+					pam_open_session(), pam_authenticate(), pam_acct_mgmt(), pam_prompt(), pam_vprompt() - all functions owned by libpam
+				By hooking the four said standard libc functions, we can trick the system into thinking our backdoor user actually exists without
+				having to edit any files. This works fine, however log files will still be written to as if the account really does exist. We combat
+				this by hooking utmp functions (getutent(), getutxent(), pututline()) and syslog().
+
+		[0x00000053]
+			execve() commands:
+				Allows users to enter vlany-exclusive commands from an owner shell. To execute a vlany execve command, type ./ followed by the name
+				of the command you wish to run and then follow that with your execve password, defined in config.py.
+				Once you log into an owner shell, run ./help [execve_password] for a list of vlany commands at your disposal.
+
+[0x00000004]
+    [Note(s) to reader]
+        I reference the 'did-it-brick-it' test in entries as of 4:June:2016. This simply consists of rebooting a Debian 8 VM with the rootkit installed and diagnosing
+        if the box could boot successfully or not, and sometimes if there are any segfault messages in the dmesg logs. If the VM did not boot successfully, I trace my steps back
+        and see what went wrong.
+
+    [27:May:2016]
+        It's Friday the 27th of May, 4:22 am as I'm starting to write this entry. I got the idea to do these from the chaps over at p2. They seem like a good idea, so here we go.
+        DAY:MONTH:YEAR seems like a good way to document these entries, so that people reading this can easily skip to a certain date. Adding specific time markers seems
+        somewhat unnecessary. I doubt anybody is going to want to want to find an entry written at a specific time in the day.
+        What did I add to vlany tonight/this morning? I didn't have much time tonight, since I have to wake up kind of early in the morning, and it's already 4 am.
+        Anyway, I just added some macros, which make hooking functions and cleaning up strings easier for me.
+        Find HOOK & CLEAN in config.py's const.h section for revision if desired.
+
+        I've been thinking over the past little while on how to implement even stronger persistence. I've been daddling in kernelspace hacking.
+        My first attempt was to use an LKM to constantly write the rootkit's shared library path to ld.so.preload by hooking Linux's write function via control of
+        the cr0 bit of the kernel. I did attempt this, but for some reason, when open was called, the file descriptor would always have a value of -14, making it
+        unable to write to ld.so.preload. I did also attempt this same idea, but by using the vfs_write function. It is recommended online in many places to use the
+        virtual file system functions when working with file io in the kernel. This was also a failure.
+
+        My other attempt was to read from and write to /dev/mem from userspace and allocate memory in the kernel for vlany. Originally, I would've used /dev/kmem as an
+        attack vector, but a lot of operating systems that come with precompiled kernels disable /dev/kmem by default. Apparently some operating systems even disable /dev/mem.
+        Additionally, /dev/kallsyms isn't present on some systems. /dev/kallsyms is basically required to hunt for system call addresses from userspace. There is also a kernel
+        option to disable access to /dev/mem even if it is present - attemped access is logged to dmesg, so this method is loud if it fails. Overall, kernelspace hacking is
+        becoming a pain. If any other potential methods pop up into my scope, I'll probably look into them.
+        Here are some interesting articles in relation to kernel hacking:
+            http://phrack.org/issues/58/7.html
+            http://phrack.org/issues/64/12.html (not really related to what I was doing... but still interesting nonetheless)
+            http://phrack.org/issues/66/16.html
+            http://phrack.org/issues/68/6.html
+            (23/10/2016): I found this talk from defcon 9 ages ago, it's old but still sexy to a certain extent.
+            			  https://www.youtube.com/watch?v=r2Rc0aLjp2w
+
+    [02:June:2016]
+        I completely switched the file hiding over to extended attributes. Naturally, vlany still uses GID based process hiding, since the procfs doesn't support the use of
+        extended attributes. But now, the magic GID cannot be bruteforced. This is great!
+        Might call this rootkit 'fuckfuckumbreon'. (HAHAHA GET IT??)
+
+    [03:June:2016]
+        I think I'll just add these entries whenever I add something majorly significant.
+        vlany now uses a tui to install. It requires dialog for the tui.
+        I would've used whiptail, but it's surprisingly rather buggy, and very few of the bugs are ever patched.
+        Having to manually edit config.py whenever I wanted to install an iteration of vlany on a box was getting tedious. This also provides some (personal(?)) benefits.
+        This also makes vlany remarkably more robust and simpler to install.
+        Additionally, cleaning up the installation script was always on my todo list. This switch from a cli installation script to a tui installation script really helped
+        me do that.
+
+    [04:June:2016]
+        I've been adding some miscellaneous stuff to the installation script. I'm adding a flag which allows installation/compilation without the dialog tui.
+        The installation script now checks to see if ld.so.preload already exists, and then shows the location of the loaded libraries, and unlinks ld.so.preload.
+        This is done by using a small statically compiled binary. The source for this binary can be seen in misc/rm_preload.c. The source is described with comments above the includes.
+        This small addition is good if you wanna own someone's (already-rooted) box.
+        However, if ld.so.preload is being used for a legitimate use, it may break some kind of functionality of the box. It's unlikely that ld.so.preload is being used for a legitimate
+        use though.
+
+        To vlany however, I added some new mechanics. Users now cannot preload the libc library itself, to prevent viewing of protected paths and processes.
+        (I did a 'did-it-brick-it' test after adding this, and the VM rebooted perfectly fine, everything still intact. Perhaps with a more beefed up box it may break some applications.
+        If this is the case, just remove this yourself, it's not that difficult. See symbols/exec/execve.c:326.)
+        Additionally, users can also no longer statically compile binaries with gcc's -static flag.
+        Any attempts to do either of these two things result in an invalid permissions error.
+        I tried some other methods, but got impatient and just resorted to throwing an error when someone tried compiling anything statically. I'm unsure to what extent this will break
+        other aspects of the rooted systems, but I also did a 'did-it-brick-it' test, and no notable errors arised.
+
+        Oh, I almost forgot to mention. I added the library destructor into vlany.c. The constructor had already been making sure the rootkit was persistently installed.
+        Both the constructor and destructor now attempt to rewrite ld.so.preload if it's inconsistent or broken.
+        Essentially, when a new process is started, it tries to rewrite ld.so.preload to reinstall the rootkit.
+        And then when that new process ends, it - again - also tries to rewrite ld.so.preload to reinstall the rootkit.
+        I still want to be able to write the entire library from memory into a file location, so that the rootkit library location is dynamic, and not static. That would be a fantastic addition.
+        But - alas, is a ludicrous idea.
+
+        I also fixed a small bug today. After the switch to extended attributes for file hiding, I had completely forgot to reassign the magic extended attribute to ld.so.preload when
+        rewriting it in the reinstall function calls.
+
+        I go back to school on Monday. Let's see what I can do before then.
+        I just added a functionality to break the strings command if it tries reading from the rootkit library. The rootkit library should already be protected, but we can never have enough
+        defense, right?
+
+        So I've been working on making the installation script a little more robust. I added the "--cli" flag to install.sh - this allows the user to install vlany with a more basic ui.
+        install.sh just executes with a regular tui when run with no arguments. It will try to install dialog, and if that fails, a message is displayed recommending the user to run with the
+        --cli flag.
+
+    [5:June:2016]
+        It's only just went onto the 5th, since it's still only 1:17 am.
+        But I just wanted to document that I completely fixed the port hiding in vlany. "netstat -a | less" now does not show any vlany backdoor connections, via the PAM backdoor or the accept
+        hook backdoor. The script for connecting to the PAM backdoor under the hidden PAM port is located in 'misc/' and is called 'ssh.sh'. Usage for this script is shown upon execution.
+
+        Discovered that the fgetflags and fsetflags functions are called upon execution of 'chattr'. I'm unsure what library these functions are part of. There are no online man pages for
+        these functions, and any source code I could find for the functions were messy, and also very old. They are however, based on what I had, now hooked.
+
+        If a regular tries to issue 'rm' on ld.so.preload, it'll prompt if they want to remove the 'write-protected regular file'. This is bad, since they know it exists now. install.sh now
+        issues global read/write permissions on ld.so.preload. The permissions attached to the file is ultimately useless however, since vlany protects ld.so.preload.
+        Since this happened, I'm now going to add a limitation to vlany, which prevents the backdoor user from unhiding ld.so.preload or their hidden directory.
+        Limitation was added.
+
+        5:47 pm, just woke up about 30 minutes ago. I (maybe) forgot to write an entry about this, so I shall do it [again] now. I'm uncertain of what day it was I added this, or maybe I've already written the
+        entry and I'm unaware of it - but vlany now hides from /proc/self/numa_maps, along with process maps and smaps.
+        I tried making a detection script in Python, just to see if my following theory was correct.
+        There's a directory called 'map_files/' in /proc/id/ and it contains a list of memory address ranges. On the presumption that this directory has a list of memory address ranges pertaining
+        to numa_maps, maps, and smaps, I made a small little Python script to get a list of memory address ranges from maps and smaps, get the address ranges from 'map_files/' and compare them.
+        If a memory address range in the 'map_files/' directory listings doesn't adhere to the contents of maps and smaps, the script would notify the user of this inconsistency.
+        Again, the whole thing is just a theory. I don't fully expect it to work. You can however, revise the code in 'misc/detect_proc_forge.py'.
+
+    [23:October:2016]
+    	I've had to attend to a lot of personal matters. Additionally, my laptop's hard drive is faulty. I'm currently in the middle of rectifying this. :)
+    	I've retrieved a back up copy of vlany, but I'm uncertain as to how outdated this copy is, but I'll have to work with what I have.
+    	The thought has been on my mind of just making vlany a public rootkit. All I have to do is test the current build and fix any present bugs/problems until it's in a releasable condition.
+
+[0x00000005]
+    *I'm planning on making this public as soon as I add this section to this README. This section lists any bugs that arised during development of vlany, and when it comes to it, any*
+    *bugs that got patched during development. Since vlany is an on-going project, bugs will arise, and bugs will be patched. Keep up to date with this section every so often just so you*
+    *fully understand the stability of vlany. If you're experienced and understand what you're doing, you can fix any bugs that deteriorate the usability of vlany.*
+    *This section uses the same date format as 0x00000004.*
+
+    *I added this section because I've been busy a lot lately and can't keep properly working on vlany. But every so often, updates will be pushed. I hope you understand.*
+
+    [29:October:2016]: Logging into the PAM backdoor works completely fine the first time you log into the backdoor, but then exiting the backdoor and trying to re-enter it again will not work.
+                       The weird thing though, is that it works completely fine after a set amount of the time. I'm not sure how long, the amount of time could change on each system.
+    [29:October:2016]: There's a bug in vlany that causes the rootkit to brick the box (on reboot). I remember this bug from the version of vlany I had before I lost my personal copy. The rootkit
+                       will need to be debugged in order to discover where this bug arises from.
+
+[0x00000006]
+	-----BEGIN PGP PUBLIC KEY BLOCK-----
+	Version: Keybase OpenPGP v2.0.58
+	Comment: https://keybase.io/crypto
+
+	xsFNBFgNEt8BEAC7o8Gl2ZkiLSgJaTMLzc6nt8uKOREVOARcupJqAgSxNeeOtqSi
+	U8dOOsTltW39HXSkC0k+7OYFSG9nE9RKOejm9TU/0nAj7o4YL2EPj9/qsVFTD4EV
+	TmmWQuunyta9Vr3JKWGqLSs9Eo+8bjzvQZuEwCxNNj7sujMe19LRkvG1gxMMlPE0
+	2mLxYTlQ8uHvfUoaeSCIx2IxcPy1DP50eohfcajsHGi5b6FMdyuWXP/SNV4jtZXu
+	WwSBPPmKQdYeUM88A1AWcZSicMtcSFOmWoE1rI/h3xnJhI7HDl71q9tBo2lgq4xw
+	wv5OahjRiRbmPSX60lly82twdeI4BF7NNdBviq7pT6X299xZ6xLJ+4ZV+0G6jOnN
+	crG2W8Et/Yl/0mER+WJvxFIEXeXOzf9oaZ6kOc/a1165m3H2N+A7ufWmFAFSXSvd
+	dU/Dh4iiW9xD8PrqPvKaegnNkl1sh+LfiGoWAYTgpLPh2L65PYpu4eBUNsHtEATZ
+	LQpJceoW5yEnl3e2pZfyqpAbNnm//cExB/LFuQMilp1gc+QNbCeujUDGWS+9DEoh
+	VjYx1j63uZLMUq4vSpliZCL7q/YFSe01H6xOpvBDJDGMLukSQQf1BDfQff1iKQBu
+	q8/xHcBq5BxAGLnX633F1+WKQZ0tx9+kEIMfkBck7DX8uc0RPr7j0OKW7QARAQAB
+	zRpKYWNrIFJvd2FuIDxhaWRzZkBib3VuLmNyPsLBdAQTAQoAHgUCWA0S3wIbAwML
+	CQcDFQoIAh4BAheAAxYCAQIZAQAKCRA/OzjYfOD5ZLTeD/9AR98hR5hn69nQX5HR
+	HR+p5RoWtQQ/XobxqoCKixI0O3uyHflI502YOM2T9+3gnGPtqUwPxmKqnsWIdEAG
+	DmfpC0YMx5nKa/pXWTmPzhEoJMklyOKrWIfe5YCce5j/JBRbz9QP7mOJIBvLrov2
+	FseaUOGHFKG0aQjsxgknNm5cCZ7Gg8vuMHaGYP4+r/qmkEgGTDyKNEDIO4wH8y8r
+	+6p2VzCurHqV8R85cThhBrILfYoTxO2Nbm0+uneNtkAw1uJZSmZSSPiWgDrB7KbM
+	nTXvW6HkEjeQdCoCNXv7VgXB92F0xY0zuai5EQm5icb+1XEmLsvcepyJ2WhR+sXh
+	wbBvX4S+X/rv+HQNsij8PFDPW1CM++bfvScDdMBirjAq5o4sjQBaX02Gywm/o0nm
+	QgG2wIqsc509246fJYVCSydi5cswefFBcOmo+jiZkFlGDiBYy9nc83HRobfwsXK5
+	sAZJ306ozlihx+k7V8nNmifUlzRYndTbA7S4wg3qEsaUHTP4kDjz/VL63Bz+uoi9
+	Z0T0KQH1qPaBqdOx6vZmMfPd3ORuVLlbHGRNlMpkBvUN3ZAed1j2nGvANgyzRSrn
+	lgLK5kV1icJ6T//WCfKD58RHR6t7nKIIfGfC/blOZkagT7KgxixVBxTt9Lqowk/L
+	MP59eWgIeqWyK865LC9VaKt5Uc7ATQRYDRLfAQgAtEOPA9k/sLD7LYUk5FxnswH+
+	/DM4a5KEjnSAngyW/qtHtIpwBBSc2vj4DsvGv9wuYbXaERCTAj+PLcvU6GoNk/a9
+	GYXeKyMsHMfEwJXEDGtEuexoNpGY5rCgUsV7RF2V/tkSDRW+ogMZKMV8uxOZPf3X
+	YmlBXGs91YNvjw+v7b9jN+MnwcjYuTPecy80yC+rLXMXTdSEGxz1TfBLO2fAhSWN
+	jRtjfR1hobaa3MYNhFcFBnnGQ7hxWmYKECTCplGvMw3IYWS4RPM0LeaUp7zi8/sF
+	G28EBfwJ++LfEyHho1imobAvRscn0QvTm8wXltwOTyXUMGiAQt0cizes04UgTQAR
+	AQABwsKEBBgBCgAPBQJYDRLfBQkPCZwAAhsMASkJED87ONh84PlkwF0gBBkBCgAG
+	BQJYDRLfAAoJEHelzvQw9Kx8jBsH/38HXEf+XKbWFomd6VRk8VX0VQLQVynu6lk1
+	lqAjnJIvMLbpM/F4y79AqMQsnraDo6buGqvb0BwJZ9XyZAxlEreyy4z7GOeoCRvv
+	bLaIVHsbyYhhnDWK4gCSNsbWYbjjO3p4rTuzYrEtiZHw2B8DQhj+GviiVVxwjPk+
+	Ym/eXhNQ9lXzD6arzsiIpKP4asxQvvZt3kSk7M5iHmoSJXloCGrEzn+1PslFy62K
+	7+r31fwk1TSwYLl0e5Dae8tZgkhh1LiLgk7JySHdu23t+jZWNBEjCT+k0HXSGPAR
+	rZqIHoW00Qpx09qk5JUYbtTXrCMA/ZmAc4BezFfErUo32sKq1hkSVBAAnb017MuR
+	qmRZ5y0wRoEcdKj8eqPgJ1hkEYmJGpOr5E/iDehlameb42CgYQ8WMp6wsnKVaeA4
+	k8gXt0nKLGpPUOvLj+JxMKXxORpCytGhpNTL02D2XqtgjH6NQ+xQiorOx6CBy5MV
+	twlnedE/Yg+w1hQb6XO36QYxcSs/zs4lGR/cfxk8VXwhP77z6F9/VmrxGwVZDlk9
+	b51zrGGBbz6wqD9906k/Mzff7EUdS4ghDtHosn5nlIIx4MTSjkKH82ZQ1kn/0GN/
+	1NF/kGR9UjicRIuzOJxLixJhoXafVaV1YXV2yoj7xPXBBh5Qov1Y7SIR+pDUj/pe
+	dH73TIaEQuUwMECIPIy+c75+RujzStrR/Ye1nDW+TWo86baTr6eTMHNORvh2nUuK
+	JjJnWTo5WmZ17+VI98VBF95mH4mkrW+faQhTi2r/l/BWD1iMZXFgmmKWp8TiRSiJ
+	syaJozheoJFvD9MShwEL6/m6rgU7bOXQf64dyQn3tiHcnDM2cgTyRwSD8XOedi55
+	KNxSWtIJEKQ+MpOw8MoncLBlktMzSIzrlpRdG7KpYVeWk3dCejyddmjc23msDW+C
+	/eSc5p76UDMWIL2bbORGbDdcTrOyo+nOEazMFOoxP4lR1qKh4x9LWWvtdjqVyMfa
+	1wFAtvZcETEmzTBWOTd2WEY1ur5BgqpL2n7OwE0EWA0S3wEIALIrdKl45fDg/WHq
+	5iQjXtZIiD87nc46h7WKTQSLh50Pb7vSqNsCV4zJly7AbdzSYnG8BDzjWNBGlzUK
+	mprc80F3uEPUNrXjXd2SI5OCy7R1CYaCMEtv0HHzjvdJctMqyQ5LcL8qv1hAL1rG
+	G5xwnNo3wmS7WAJV2uH3BJgUeuPtTE2XrQYwMehkE5TI2vsHnx9jlwnrPRKLj7qN
+	k/POCT2S2rXu14hF+SGJzwEPDIHSo6SuaAMNB+F3VanYZOlpdGSaDVeSUay6Ptx8
+	sloUInDZSszMNBCUVRUU77tA1ZxMDczOvB6SvKCmWEIOl4myeKdV5qyVu/gk6hBu
+	daA78ZUAEQEAAcLChAQYAQoADwUCWA0S3wUJDwmcAAIbIgEpCRA/OzjYfOD5ZMBd
+	IAQZAQoABgUCWA0S3wAKCRD0NBxugyyp9UvzCACw+dT+SxE2tYEZjsFH5PdQYUOx
+	WJM+VP7kGyUDIm+FFpoRLxOiQx0+Vo0y5HKO10koum5KmqT+y5t3KiRcEMYBsfqJ
+	Cfr4yztfL0Z7IHK/PsVUVNJL+KflbSxN6EpBkGYU6kUPcDQa+EmAk5TkeUlVmmhR
+	tzh6YcJ8xrJA+ABBVV9DS57votZbbSlqOpImgIuaLZQR/gFMS7KeHCrUHbKenK7S
+	KaqyDScgVaB+t8o/j8kvBLTVTTTgazjeOEDV2L0UDtQmXqEugcawrvoQ7hx5Mbxo
+	DPvNGvzTi7FCZVBrj8PFh748D8oWlB5a/IV/o7qX3mEWuWTZVv2WvPtaLA9r5X8Q
+	AIOhQeAMktqOs4n11Z0brUVRGTvnS7Audyl3kl5lDHsKxp6FTe+QkW3XnyKS+Nyr
+	qtUZjm3/3bU1VQeptLjKjARiAlpUL9f1u96BWffVXBdYVks2Azo9UFVbrhEEXV/J
+	LPRQWsMX2fD+lDEzOog/5lNu0tHpQ0CFHIQyBkAp1O0QjuF4mlDoCDFrG34034Ww
+	Ua29A0zIxI3fU4+wzDORRkyuegOs35pKjrxSvsY7RgMXvOGCX1fAjvS2OtMWGebC
+	MUDs2neNet/pPGKUu5KQNzqHUA3QtzgHlxqPxILX0exLlQVrOa888WqWadrUhbfC
+	tJDvGhHiQYORcKPbD4SLQj9GdztCsTm20tFuTWE+21VE9+9uC5oByx7BaK99YQTp
+	W8Sehm9A05h/ZTp/GKrD5iUsa6LbWZCPGNPOcaVDky6bgux170c6+O/rZ9tHU+ye
+	NvTLQETb81a0oHim/WDPx6zUEhmXaGk/6epH4KY8SnQ4liu8iDEMxU7tPovq+dox
+	2D0X5napuyKZ/7DemGmLvENjiphqLkT72VoyqhCBwLhZyuZTTctMZF/bnyJ1Vgsf
+	9+mUVqTFNmlWumpBFHaV03JWTTM9A1cAaMuVjKRwF3NVnWU8WNJvIpbShKOki80N
+	gLZav9meayuQPMpyI0tTiYAkvpj84oOk410Gtzo2Iqb3
+	=OunF
+	-----END PGP PUBLIC KEY BLOCK-----
