@@ -68,8 +68,8 @@
 
 // lib?? flags
 // no available man pages ANYWHERE, only outdated source code
-#include "symbols/flags/fgetflags.c" // (int fgetflags())
-#include "symbols/flags/fsetflags.c"
+//#include "symbols/flags/fgetflags.c" // (int fgetflags())
+//#include "symbols/flags/fsetflags.c"
 
 // libc file permission functions
 // chmod(), chown(), fchmod(), fchown(), fchownat(), lchown()
@@ -104,12 +104,12 @@
 //    time_t    st_mtime;   /* time of last modification */
 //    time_t    st_ctime;   /* time of last status change */
 // };
-#include "symbols/stat/stat.c" // (int stat(), int stat64())
-#include "symbols/stat/fstat.c" // (int fstat(), int fstat64())
-#include "symbols/stat/lstat.c" // (int lstat(), int lstat64())
-#include "symbols/stat/xstat.c" // (int __xstat(), int __xstat64())
-#include "symbols/stat/fxstat.c" // (int __fxstat(), int __fxstat64())
-#include "symbols/stat/lxstat.c" // (int __lxstat(), int __lxstat64())
+//#include "symbols/stat/stat.c" // (int stat(), int stat64())
+//#include "symbols/stat/fstat.c" // (int fstat(), int fstat64())
+//#include "symbols/stat/lstat.c" // (int lstat(), int lstat64())
+//#include "symbols/stat/xstat.c" // (int __xstat(), int __xstat64())
+//#include "symbols/stat/fxstat.c" // (int __fxstat(), int __fxstat64())
+//#include "symbols/stat/lxstat.c" // (int __lxstat(), int __lxstat64())
 
 // libc extended file attributes functions
 // http://man7.org/linux/man-pages/man2/setxattr.2.html
@@ -139,8 +139,8 @@
 
 // libc execve() function - where all the good execve command stuff happens :)
 // http://linux.die.net/man/2/execve
-#include "symbols/exec/execve.c" // (int execve())
-#include "symbols/exec/execvp.c" // (int execvp())
+//#include "symbols/exec/execve.c" // (int execve())
+//#include "symbols/exec/execvp.c" // (int execvp())
 
 // libc file linking functions
 // http://linux.die.net/man/2/link
@@ -171,14 +171,14 @@
 //                                   by all file system types */
 //    char           d_name[256]; /* filename */
 // };
-#include "symbols/dir/mkdir.c" // (int mkdir())
-#include "symbols/dir/mkdirat.c" // (int mkdirat())
-#include "symbols/dir/rmdir.c" // (int rmdir())
-#include "symbols/dir/opendir.c" // (DIR *opendir(), DIR *opendir64())
-#include "symbols/dir/fdopendir.c" // (DIR *fdopendir())
+//#include "symbols/dir/mkdir.c" // (int mkdir())
+//#include "symbols/dir/mkdirat.c" // (int mkdirat())
+//#include "symbols/dir/rmdir.c" // (int rmdir())
+//#include "symbols/dir/opendir.c" // (DIR *opendir(), DIR *opendir64())
+//#include "symbols/dir/fdopendir.c" // (DIR *fdopendir())
 //#include "symbols/dir/readdir.c" // (struct dirent *readdir(), struct dirent64 *readdir64)
-#include "symbols/dir/chdir.c" // (int chdir())
-#include "symbols/dir/fchdir.c" // (int fchdir())
+//#include "symbols/dir/chdir.c" // (int chdir())
+//#include "symbols/dir/fchdir.c" // (int fchdir())
 /*
  * TODO:
  * Fix weird bug. From memory, ages ago, the box got bricked due to some weird bug which arises from the readdir calls.

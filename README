@@ -287,6 +287,7 @@ Table of Contents:
                        The weird thing though, is that it works completely fine after a set amount of the time. I'm not sure how long, the amount of time could change on each system.
     [29:October:2016]: There's a bug in vlany that causes the rootkit to brick the box (on reboot). I remember this bug from the version of vlany I had before I lost my personal copy. The rootkit
                        will need to be debugged in order to discover where this bug arises from.
+    [30:October:2016]: After installing vlany, any new shells that are opened won't correctly list directories and files. The owner shell is excluded from this.
 
 [0x00000006]
 	-----BEGIN PGP PUBLIC KEY BLOCK-----
