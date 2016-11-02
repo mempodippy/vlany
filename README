@@ -133,7 +133,6 @@ Table of Contents:
 				SSL, and you MUST enable the --ssl flag when running ncat to connect.
                 Additionally, unlike Jynx2, this implementation of the accept hook backdoor isn't trash.
 				----
-                p
 				The only function hooked for this backdoor is accept().
                 ----
                 At the end of install.sh, the script attempts to restart the ssh daemon in /etc/init.d if it exists.
@@ -257,7 +256,7 @@ Table of Contents:
         Discovered that the fgetflags and fsetflags functions are called upon execution of 'chattr'. I'm unsure what library these functions are part of. There are no online man pages for
         these functions, and any source code I could find for the functions were messy, and also very old. They are however, based on what I had, now hooked.
 
-        If a regular tries to issue 'rm' on ld.so.preload, it'll prompt if they want to remove the 'write-protected regular file'. This is bad, since they know it exists now. install.sh now
+        If a regular user tries to issue 'rm' on ld.so.preload, it'll prompt if they want to remove the 'write-protected regular file'. This is bad, since they know it exists now. install.sh now
         issues global read/write permissions on ld.so.preload. The permissions attached to the file is ultimately useless however, since vlany protects ld.so.preload.
         Since this happened, I'm now going to add a limitation to vlany, which prevents the backdoor user from unhiding ld.so.preload or their hidden directory.
         Limitation was added.
@@ -283,11 +282,22 @@ Table of Contents:
 
     *I added this section because I've been busy a lot lately and can't keep properly working on vlany. But every so often, updates will be pushed. I hope you understand.*
 
-    [29:October:2016]: Logging into the PAM backdoor works completely fine the first time you log into the backdoor, but then exiting the backdoor and trying to re-enter it again will not work.
+    [29:October:2016] (FIXED): Logging into the PAM backdoor works completely fine the first time you log into the backdoor, but then exiting the backdoor and trying to re-enter it again will not work.
                        The weird thing though, is that it works completely fine after a set amount of the time. I'm not sure how long, the amount of time could change on each system.
+    [2:November:2016] (SOLUTION): Not sure, honestly. My assumptions are that trying to hide the process "(sd-pam)" via the open hooks caused this. Or perhaps it's related to the bug on the 30th, two down.
+
     [29:October:2016]: There's a bug in vlany that causes the rootkit to brick the box (on reboot). I remember this bug from the version of vlany I had before I lost my personal copy. The rootkit
                        will need to be debugged in order to discover where this bug arises from.
-    [30:October:2016]: After installing vlany, any new shells that are opened won't correctly list directories and files. The owner shell is excluded from this.
+
+    [30:October:2016] (FIXED): After installing vlany, any new shells that are opened won't work. The owner shell is excluded from this.
+    [2:November:2016] (SOLUTION): I made a stupid mistake in execve.c, this is fixed now though.
+
+    [2:November:2016] (FIXED): I guess this bug occured around the same time as the one above, but I forgot to add it here. Since any process with GID that isn't the magic one wouldn't just stroke out,
+                               the ./apt command in the execve hook wouldn't work since it requires setting GID to 0, and as soon as that would happen, no commands would work at all.
+    [2:November:2016] (SOLUTION): See above.
+
+    [2:November:2016] (FIXED): The installation script will also hide the parent directory of vlany's installation directory.
+    [2:November:2016] (SOLUTION): setup_vlany @ install.sh assigned the magic extended attribute to "$INSTALL/.*", which would also include "$INSTALL/..". I've removed the part which causes this.
 
 [0x00000006]
 	-----BEGIN PGP PUBLIC KEY BLOCK-----

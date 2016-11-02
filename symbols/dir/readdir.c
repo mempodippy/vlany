@@ -1,4 +1,4 @@
-// I fuckin' hate these hooks.
+// I fuckin' hate these hooks. I just do.
 
 struct dirent *readdir(DIR *dirp)
 {
