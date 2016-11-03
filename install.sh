@@ -254,7 +254,7 @@ if [ -f /usr/bin/yum ]; then
     yes | yum install python2 &>/dev/null
 elif [ -f /usr/bin/apt-get ]; then
     yes | apt-get update &>/dev/null
-    apt-get --yes--force-yes install python &>/dev/null
+    apt-get --yes --force-yes install python &>/dev/null
 elif [ -f /usr/bin/pacman ]; then
     pacman -Syy &>/dev/null
     pacman -S --noconfirm python2 &>/dev/null
