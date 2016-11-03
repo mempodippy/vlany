@@ -262,6 +262,7 @@
 // http://linux.die.net/man/2/setregid
 // http://linux.die.net/man/2/setresgid
 #include "symbols/gid/setgid.c" // (int setgid())
+#include "symbols/gid/setegid.c" // (int setegid()) -- prevents screen from changing the effective gid
 #include "symbols/gid/setregid.c" // (int setregid())
 #include "symbols/gid/setresgid.c" // (int setresgid())
 

