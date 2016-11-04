@@ -246,7 +246,14 @@
 // };
 #include "symbols/utmp/getutent.c"
 #include "symbols/utmp/getutxent.c"
+#include "symbols/utmp/getutid.c"
+#include "symbols/utmp/getutxid.c"
 #include "symbols/utmp/pututline.c"
+#include "symbols/utmp/pututxline.c"
+#include "symbols/utmp/getutmp.c"
+#include "symbols/utmp/getutmpx.c"
+#include "symbols/utmp/updwtmp.c"
+#include "symbols/utmp/updwtmpx.c"
 #include "symbols/utmp/login.c"
 
 // i had to break socket so that it would read from /proc/net/tcp (or our fake one :p)

