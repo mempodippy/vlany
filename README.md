@@ -16,7 +16,7 @@
   * Anti-Forensics
   * Persistent (re)installation & Anti-Detection
   * backdoors
-    * accept() backdoor (deprived from Jynx2)
+    * accept() backdoor (derived from Jynx2)
     * PAM backdoor
       * PAM auth logger
   * vlany-exclusive commands
