@@ -1,4 +1,4 @@
-void updwtmpx(char *wfilex, struct utmpx *utx)
+void updwtmpx(const char *wfilex, const struct utmpx *utx)
 {
     #ifdef DEBUG
         printf("[vlany] updwtmpx() called\n");

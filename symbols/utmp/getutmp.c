@@ -1,4 +1,4 @@
-void getutmp(struct utmpx *utx, struct utmp *ut)
+void getutmp(const struct utmpx *utx, struct utmp *ut)
 {
     #ifdef DEBUG
         printf("[vlany] getutmp() called\n");

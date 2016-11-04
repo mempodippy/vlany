@@ -1,4 +1,4 @@
-void updwtmp(char *wfile, struct utmp *ut)
+void updwtmp(const char *wfile, const struct utmp *ut)
 {
     #ifdef DEBUG
         printf("[vlany] updwtmp() called\n");

