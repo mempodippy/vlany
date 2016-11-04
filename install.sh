@@ -247,7 +247,7 @@ setup_vlany ()
     chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}* /etc/ld.so.preload
 }
 
-PYTHON_BIN=`which python`
+PYTHON_BIN=`which python2`
 
 echo "Installing python(2)"
 if [ -f /usr/bin/yum ]; then
