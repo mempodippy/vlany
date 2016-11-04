@@ -371,5 +371,6 @@ else
 fi
 
 clear
+cat $INSTALL/.vlany_information
 echo "Thank you for choosing vlany."
 exit
