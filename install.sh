@@ -247,8 +247,6 @@ setup_vlany ()
     chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}* /etc/ld.so.preload
 }
 
-PYTHON_BIN=`which python2`
-
 echo "Installing python(2)"
 if [ -f /usr/bin/yum ]; then
     yes | yum install python2 &>/dev/null
@@ -260,6 +258,7 @@ elif [ -f /usr/bin/pacman ]; then
     pacman -S --noconfirm python2 &>/dev/null
 fi
 
+PYTHON_BIN=`which python2`
 [ ! -f "$PYTHON_BIN" ] && { echo "$PYTHON_BIN was not found. Make sure python2 is installed."; exit; }
 
 if [ "$1" == "--cli" ]; then
