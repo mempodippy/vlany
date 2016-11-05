@@ -21,7 +21,7 @@ chmod --reference {0} {0}.tmp
 mv {0}.tmp {0}"""
 
 if len(N_PRELOAD) > len(O_PRELOAD):
-	print("New ld.so.preload location needs to be the same length as the original location. ({0} chars)".format(strlen(O_PRELOAD)))
+	print("New ld.so.preload location needs to be the same length or smaller as the original location. ({0} chars)".format(strlen(O_PRELOAD)))
 	quit()
 
 def hex_str(_):
