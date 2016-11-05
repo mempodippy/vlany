@@ -30,4 +30,4 @@
 ###Minor bugs
 > 1. There is a [weird bug](https://github.com/mempodippy/vlany/issues/4) where it shows a duplicate line in the w / who commands.
 
-##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README)</br>
+##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
