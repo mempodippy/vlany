@@ -67,4 +67,4 @@ if __name__ == "__main__":
 	for x in locations.split("\n"):
 		patch_lib(x)
 
-        print("{0} finished. The dynamic linker has been hacked.\nLocation of new 'ld.so.preload':\n{1}".format(sys.argv[0], N_PRELOAD))
+        sys.stdout.write("{0} finished. The dynamic linker has been hacked.\nLocation of new 'ld.so.preload':\n{1}".format(sys.argv[0], N_PRELOAD))
