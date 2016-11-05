@@ -29,7 +29,7 @@ CHATTR_OUTPUT=$(touch children; chattr +ia children &>output; cat output)
 [[ $CHATTR_OUTPUT == *"Inappropriate ioctl"* ]] && { read -p "Warning: You're attempting to install vlany on a weird/alien filesystem. This is bad. Bailing."; exit; }
 chattr -ia children &>/dev/null; rm -f children output
 
-NEW_PRELOAD=$(python2 misc/patch_ld.py | tail -n1)
+NEW_PRELOAD=$(cat new_preload)
 
 install_vlany_prerequisites ()
 {
