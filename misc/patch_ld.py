@@ -39,7 +39,7 @@ def patch_lib(location):
 			n_preload_hex = hex_str(N_PRELOAD)
 
 			while(len(n_preload_hex) <> len(o_preload_hex)):
-				print("Padding the new preload location with nullbytes so that it is the same size.")
+				print("Padding the new preload location with nullbytes so that it is the same length.")
 				n_preload_hex += "00"
 
 			print("Replacing {0} with {1} in library {2}".format(O_PRELOAD, N_PRELOAD, location))
