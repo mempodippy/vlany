@@ -15,7 +15,8 @@
   * Anti-Debug
   * Anti-Forensics
   * Persistent (re)installation & Anti-Detection
-  * backdoors
+  * Dynamic linker modifications
+  * Backdoors
     * accept() backdoor (derived from Jynx2)
     * PAM backdoor
       * PAM auth logger
