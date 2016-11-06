@@ -36,6 +36,6 @@ By default this will prompt you with a [tui](https://en.wikipedia.org/wiki/Text-
 > This bug arises from hide_checks.c @ hidden_xattr. It'll get fixed.
 
 ###Minor bugs
-> 1. There is a [weird bug](https://github.com/mempodippy/vlany/issues/4) where it shows a duplicate line in the w / who commands.
+> 1. There is a [weird bug](https://github.com/mempodippy/vlany/issues/4) where it shows a duplicate line in the w / who commands. This is potentially a way to detect a vlany installation on a box.
 
 ##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
