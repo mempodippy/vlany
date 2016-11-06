@@ -56,11 +56,6 @@ def get_ld_locations():
 					lib_locations += "{0}{1}\n".format(_, x)
 	return lib_locations
 
-def main(libs):
-	for x in libs:
-		if os.path.isfile(x):
-			patch_lib(x)
-
 if __name__ == "__main__":
 	locations = get_ld_locations()[:-1]
 
