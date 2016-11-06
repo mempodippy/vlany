@@ -23,6 +23,7 @@ rm misc/detect_lxc
 
 # nothing fatal but still good to know
 [ -d /proc/xen ] && { echo "Information: You're attempting to install vlany in a Xen environment. Don't worry about this too much."; }
+[ ! -f /etc/ssh/sshd_config ] && { echo "/etc/ssh/sshd_config not found. ssh might not be installed. Install it."; exit; }
 [ ! "$(cat /etc/ssh/sshd_config | grep 'UsePAM')" == "UsePAM yes" ] && { echo "UsePAM yes" >> /etc/ssh/sshd_config; }
 
 CHATTR_OUTPUT=$(touch children; chattr +ia children &>output; cat output)
