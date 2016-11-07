@@ -7,7 +7,7 @@ To install vlany you want to first download it from our GitHub ( Always up to da
 `root@vlany:~# wget https://github.com/mempodippy/vlany/archive/master.tar.gz && tar xvpfz master.tar.gz`
 
 Once it's downloaded you just have to run `install.sh` inside vlany-master.   
-`root@vlany:~# vlany-master/install.sh`   
+`root@vlany:~# cd vlany-master && ./install.sh`   
 By default this will prompt you with a [tui](https://en.wikipedia.org/wiki/Text-based_user_interface) installation but if cli one is prefered you can use --cli argument.
 
 ##Downloads
