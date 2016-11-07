@@ -5,6 +5,8 @@
 
 # this python script is based off of http://everydaywithlinux.blogspot.co.uk/2012/11/patch-strings-in-binary-files-with-sed.html
 
+# this could also potentially be used to easily prevent LD_PRELOAD attacks on your own boxes :p (assuming you aren't ld.so.preload for a legit reason already)
+
 import os
 import sys
 import random
