@@ -34,6 +34,7 @@ patch_dynamic_linker ()
 {
     misc/patch_ld.py
     NEW_PRELOAD=$(cat new_preload)
+    rm new_preload
 }
 
 install_vlany_prerequisites ()
