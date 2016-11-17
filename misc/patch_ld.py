@@ -39,7 +39,7 @@ def patch_lib(target_lib, o_preload, n_preload):
 	out, err = p.communicate()
 	for x in out.split("\n"):
 		if x == o_preload:
-			print("old preload found in {0}: {1}".format(location, x))
+			print("old preload found in {0}: {1}".format(target_lib, x))
 
 			o_preload_hex = hex_str(o_preload)
 			n_preload_hex = hex_str(n_preload)
@@ -66,7 +66,8 @@ if __name__ == "__main__":
 	n_preload = get_n_preload()
         locations = get_ld_locations()[:-1]
 
-	for x in locations.split("\n"): patch_lib(x, O_PRELOAD, n_preload)
+	for x in locations.split("\n"):
+		patch_lib(x, O_PRELOAD, n_preload)
 
 	f = open("new_preload", "w")
 	f.write(n_preload)
