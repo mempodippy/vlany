@@ -2,6 +2,7 @@
 
 # modifies the dynamic linker and changes the target location of /etc/ld.so.preload to a random file in a random directory
 # this means that ld.so.preload will no longer make a difference, and it'll confuse the fuck out of sysadmins trying to remove any rootkits on their box
+# want to make it even better? point the 'new' ld.so.preload to a completely random directory too :p
 
 # this python script is based off of http://everydaywithlinux.blogspot.co.uk/2012/11/patch-strings-in-binary-files-with-sed.html
 
