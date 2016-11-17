@@ -2,6 +2,8 @@
 ###A Linux (LD_PRELOAD) rootkit
 
 ##Installing
+vlany's [quick_install.sh](https://gist.githubusercontent.com/mempodippy/d93fd99164bace9e63752afb791a896b/raw/6b06d235beac8590f56c47b7f46e2e4fac9cf584/quick_install.sh) script is the recommended method of installation **if** you know what you're doing.
+</br>
 It's very simple to install vlany onto a sytem as it comes with an automated install script.    
 To install vlany you want to first download it from our GitHub ( Always up to date and trusted )  
 `root@vlany:~# wget https://github.com/mempodippy/vlany/archive/master.tar.gz && tar xvpfz master.tar.gz`
