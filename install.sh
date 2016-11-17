@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # errors and fatal risks
-[ $(uname) != "Linux" ] && { echo "Not on a Linux system. Exiting."; exit; }
+[ $(uname) != "Linux" ] && { echo "Not on a Linux system. Exiting."; exit; } # i plan on adding support for DYLD_LIBRARY_PATH (OS X stuff)
 [ $(id -u) != 0 ] && { echo "Not root. Exiting."; exit; }
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 
