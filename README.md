@@ -34,6 +34,7 @@ By default this will prompt you with a [tui](https://en.wikipedia.org/wiki/Text-
 ###Serious bugs
 > 1. There is currently only one significant bug in vlany, which unfortunately causes the box to be unable to reboot successfully.
 > This bug arises from hide_checks.c @ hidden_xattr. It'll get fixed.
+> 2. vlany fails to install correctly on CentOS (reported issue applies to CentOS 6.5)
 
 ###Minor bugs
 > 1. There is a [weird bug](https://github.com/mempodippy/vlany/issues/4) where it shows a duplicate line in the w / who commands. This is potentially a way to detect a vlany installation on a box.
