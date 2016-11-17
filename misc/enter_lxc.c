@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 
     printf("[+] creating container %s, please wait...\n", argv[1]);
     // so we need to download the container filesystem to emulate an ubuntu system.. this can take a while in some cases
+    // program will terminate if debootstrap isn't found
     if(!c->createl(c, "download", NULL, NULL, LXC_CREATE_QUIET, "-d", "ubuntu", "-r", "trusty", "-a", "i386", NULL) || !c->start(c, 0, NULL)) { lxc_container_put(c); return 1; }
     printf("[+] container created...\n");
 
