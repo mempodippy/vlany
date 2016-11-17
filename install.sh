@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # errors and fatal risks
+[ $(uname) != "Linux" ] && { echo "Not on a Linux system. Exiting."; exit; }
 [ $(id -u) != 0 ] && { echo "Not root. Exiting."; exit; }
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 

