@@ -41,7 +41,7 @@ patch_dynamic_linker ()
 install_vlany_prerequisites ()
 {
     if [ -f /usr/bin/yum ]; then
-        yes | yum install make gcc pam-devel openssl-devel newt libgcc.i686 glibc-devel.i686 glibc-devel openssl-devel.i686 libpcap libpcap-devel &>/dev/null
+        yes | yum install make gcc pam-devel openssl-devel newt libgcc.i686 glibc-devel.i686 glibc-devel openssl-devel.i686 libpcap libpcap-devel vim-common attr &>/dev/null
     elif [ -f /usr/bin/apt-get ]; then
         dpkg --add-architecture i386 &>/dev/null
         yes | apt-get update &>/dev/null
