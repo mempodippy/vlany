@@ -43,4 +43,5 @@ By default this will prompt you with a [tui](https://en.wikipedia.org/wiki/Text-
 ###Minor bugs
 > 1. There is a [weird bug](https://github.com/mempodippy/vlany/issues/4) where it shows a duplicate line in the w / who commands. This is potentially a way to detect a vlany installation on a box.
 
-##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
+##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br></br>
+**NOTE:** vlany is in active development. Changes are constantly being made to this repository, so beware that vlany is very experimental.
