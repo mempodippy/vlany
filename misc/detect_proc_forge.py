@@ -26,8 +26,7 @@ def get_map_files(proc_id):
 
     maps = ""
 
-    for x in contents[3:]:
-        maps = maps + x + "\n"
+    for x in contents[3:]: maps = maps + x + "\n"
 
     return maps
 
@@ -48,8 +47,7 @@ def getaddrs_maps(proc_maps):
     addrs = ""
 
     for x in proc_maps:
-        if not x.split(" ")[0].startswith("0") and not x.split(" ")[0].startswith("f"):
-            addrs = addrs + x.split(" ")[0] + "\n"
+        if not x.split(" ")[0].startswith("0") and not x.split(" ")[0].startswith("f"): addrs = addrs + x.split(" ")[0] + "\n"
 
     return addrs[:-2]
 
@@ -74,10 +72,8 @@ def compare_maps(proc_id, maps_addrs, smaps_addrs, map_files):
             print("\033[33mAddress {0} is not in /proc/{1}/map_files/, possible attempt to hide a malicious shared library.\033[0m".format(x, proc_id))
 
 def is_valid_proc(proc_id):
-    if os.path.isdir(PROC_PATH.format(proc_id)):
-        return True
-    else:
-        return False
+    if os.path.isdir(PROC_PATH.format(proc_id)): return True
+    else: return False
 
 def main(proc_id):
     if not proc_id == "self":
@@ -95,15 +91,15 @@ def main(proc_id):
     
     maps = read_maps(proc_id)
     maps_addrs = getaddrs_maps(maps)
-    # print(maps_addrs)
+    print(maps_addrs)
 
     smaps = read_smaps(proc_id)
     smaps_addrs = getaddrs_smaps(smaps)
-    # print(smaps_addrs)
+    print(smaps_addrs)
 
     # print("\nContents of map_files:")
     map_files = get_map_files(proc_id)
-    # print(map_files)
+    print(map_files)
 
     compare_maps(proc_id, maps_addrs, smaps_addrs, map_files)
 
