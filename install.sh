@@ -7,9 +7,7 @@
 
 [ ! -f `which gcc 2>/dev/null || echo "NO"` ] && { echo "Warning: gcc isn't installed on this box. Exiting. Install it."; exit; }
 
-if [ -f /usr/bin/yum ]; then
-    [[ "$(yum list installed glibc-static)" == *"Error: No matching Packages to list"* ]] && { echo "Installing glibc-static"; yes | yum install glibc-static &>/dev/null; }
-fi
+[ -f /usr/bin/yum ] && { echo "Installing glibc-static"; yes | yum install glibc-static &>/dev/null; }
 gcc misc/rm_preload.c -static -o misc/rm_preload
 echo "Checking for current presence of (and removing, if necessary) ld.so.preload"
 misc/rm_preload
