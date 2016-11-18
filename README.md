@@ -42,6 +42,7 @@ By default this will prompt you with a [tui](https://en.wikipedia.org/wiki/Text-
 
 ###Minor bugs
 > 1. There is a [weird bug](https://github.com/mempodippy/vlany/issues/4) where it shows a duplicate line in the w / who commands. This is potentially a way to detect a vlany installation on a box.
+> 2. Debian (8): When using apt-get, a small notification pops up indicating that a dynamic linker shared library has been modified. The following is what shows: "/sbin/ldconfig.real: /libx32/ld-linux-x32.so.2 is not a symbolic link"
 
 ##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
 **NOTE:** vlany is in active development. Changes are constantly being made to this repository, so beware that vlany is very experimental.
