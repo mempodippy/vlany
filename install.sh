@@ -3,6 +3,25 @@
 # errors and fatal risks
 [ $(uname) != "Linux" ] && { echo "Not on a Linux system. Exiting."; exit; } # i plan on adding support for OS X once everything else it dealt with
 [ $(id -u) != 0 ] && { echo "Not root. Exiting."; exit; }
+if [ -f /etc/selinux/config ]; then
+    echo "SELinux config found on system. Checking SELinux status."
+    if [[ $(cat /etc/selinux/config | grep "SELINUX=" | tail -n 1) == *"enforcing"* ]]; then
+        echo "SELinux is currently enforcing."
+        read -p "To disable SELinux, press enter to continue or ^C to exit. (Requires reboot)"
+        sed -i "s:SELINUX=enforcing:SELINUX=disabled:" /etc/selinux/config || { echo "SELinux could not be disabled. Exiting."; exit; }
+        echo "SELinux disabled."
+        echo "To continue with installation, reboot the box and restart the installation process."
+        exit
+    else
+        echo "SELinux is not interfering with vlany."
+    fi
+    
+    # verify if the box has been rebooted or not
+    if [[ $(sestatus -v | head -n 1) == *"enabled"* ]]; then
+        echo "SELinux is still enabled. Disable it."
+        exit
+    fi
+fi
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 
 [ ! -f `which gcc 2>/dev/null || echo "NO"` ] && { echo "Warning: gcc isn't installed on this box. Exiting. Install it."; exit; }
