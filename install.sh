@@ -13,12 +13,12 @@ if [ -f /etc/selinux/config ]; then
         echo "To continue with installation, reboot the box and restart the installation process."
         exit
     else
-        echo "SELinux is not interfering with vlany."
+        echo "SELinux config is clean."
     fi
     
-    # verify if the box has been rebooted or not
+    # actually verify if the box has been rebooted or not
     if [[ $(sestatus -v | head -n 1) == *"enabled"* ]]; then
-        echo "SELinux is still enabled. Disable it."
+        echo "SELinux is still enabled. Reboot."
         exit
     fi
 fi
