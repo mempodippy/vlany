@@ -7,7 +7,7 @@
 
 [ ! -f `which gcc 2>/dev/null || echo "NO"` ] && { echo "Warning: gcc isn't installed on this box. Exiting. Install it."; exit; }
 
-[ -f /usr/bin/yum ] && { echo "Installing glibc-static"; yes | yum -y install glibc-static &>/dev/null; }
+[ -f /usr/bin/yum ] && { echo "Installing glibc-static"; yum install -y -q -e 0 glibc-static; }
 
 if [ ! -f /usr/bin/yum ]; then # temporary fix for now just to avoid some miscellaneous errors - this feature isn't incredibly important
     gcc misc/rm_preload.c -static -o misc/rm_preload
