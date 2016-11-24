@@ -9,12 +9,10 @@
 
 [ -f /usr/bin/yum ] && { echo "Installing glibc-static"; yum install -y -q -e 0 glibc-static; }
 
-if [ ! -f /usr/bin/yum ]; then # temporary fix for now just to avoid some miscellaneous errors - this feature isn't incredibly important
-    gcc misc/rm_preload.c -static -o misc/rm_preload
-    echo "Checking for current presence of (and removing, if necessary) ld.so.preload"
-    misc/rm_preload && rm misc/rm_preload
-    read -p "Press enter to continue, or ^C to exit."
-fi
+gcc misc/rm_preload.c -static -o misc/rm_preload
+echo "Checking for current presence of (and removing, if necessary) ld.so.preload"
+misc/rm_preload && rm misc/rm_preload
+read -p "Press enter to continue, or ^C to exit."
 
 # conditional warnings, credits to a certain individual
 gcc misc/detect_lxc.c -o misc/detect_lxc
