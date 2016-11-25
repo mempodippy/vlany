@@ -66,7 +66,7 @@ install_vlany_prerequisites ()
         dpkg --add-architecture i386 &>/dev/null
         yes | apt-get update &>/dev/null
         apt-get --yes --force-yes install attr libpam0g-dev libpcap-dev libssl-dev libssl-dev:i386 gcc-multilib build-essential &>/dev/null
-        [ "$(apt-cache search libpcap0.8-dev)" != "" ] && { apt-get --yes --force-yes install libpcap0.8-dev &>/dev/null; }
+        [ ! -z "$(apt-cache search libpcap0.8-dev)" ] && { apt-get --yes --force-yes install libpcap0.8-dev &>/dev/null; }
         grep -i ubuntu /proc/version &>/dev/null && rm -f /etc/init/plymouth* &>/dev/null
     elif [ -f /usr/bin/pacman ]; then
         pacman -Syy &>/dev/null
