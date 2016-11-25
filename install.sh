@@ -20,6 +20,8 @@ if [ -f /etc/selinux/config ]; then
     if [[ $(sestatus -v | head -n 1) == *"enabled"* ]]; then
         echo "SELinux is still enabled. Reboot."
         exit
+    else
+        echo "SELinux is disabled."
     fi
 fi
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
