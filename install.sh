@@ -24,7 +24,7 @@ if [ -f /etc/selinux/config ]; then
 fi
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 
-[ ! -f `which gcc 2>/dev/null || echo "NO"` ] && { echo "Warning: gcc isn't installed on this box. Exiting. Install it."; exit; }
+[ ! -f `which gcc 2>/dev/null || echo "NO"` ] && { echo "Error: gcc isn't installed on this box. Exiting. Install it."; exit; }
 
 [ -f /usr/bin/yum ] && { echo "Installing glibc-static"; yum install -y -q -e 0 glibc-static; }
 
