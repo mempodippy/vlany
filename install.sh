@@ -26,6 +26,8 @@ if [ -f /etc/selinux/config ]; then
 fi
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 if [ ! -f `which gcc 2>/dev/null || echo "NO"` ]; then
+    echo "Installing gcc"
+
     if [ -f /usr/bin/yum ]; then
         yum install -y -q -e 0 gcc &>/dev/null
     elif [ -f /usr/bin/apt-get ]; then
