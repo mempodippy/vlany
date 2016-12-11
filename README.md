@@ -16,7 +16,7 @@ To install vlany you want to first download it from our GitHub ( Always up to da
 `root@vlany:~# cd vlany-master && ./install.sh`   
 By default this will prompt you with a [tui](https://en.wikipedia.org/wiki/Text-based_user_interface) installation but if cli is prefered you can use the --cli argument to invoke a similar cli installation.</br>
 
-###[ASCIINEMA OF INSTALLATION](https://asciinema.org/a/a8u6ca1n2ujmgijgldrcdu425)</br>
+###[ASCIICAST OF INSTALLATION](https://asciinema.org/a/a8u6ca1n2ujmgijgldrcdu425)</br>
 Regular tui installation on a Debian 8 box using an suid binary to escalate privileges from a tmp user. In a real life scenario, you'll want to play with some environment variables to prevent anyone from seeing your activity when root.</br>
 
 ##Downloads
