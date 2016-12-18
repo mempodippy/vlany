@@ -321,9 +321,7 @@ if [ "$1" == "--cli" ]; then
     install_vlany_prerequisites
     echo "Packages installed."
 
-    echo "Patching dynamic linker."
-    patch_dynamic_linker
-    echo "Dynamic linker patched."
+    [ $STATUS != "compile" ] && { echo "Patching dynamic linker."; patch_dynamic_linker; echo "Dynamic linker patched."; }
 
     printf "\033[1;31mBeginning configuration. Please don't leave any options that don't have default values empty (options with default values have [VALUE] in them). I can't be bothered checking for empty input.\033[0m\n"
 
@@ -378,10 +376,8 @@ else
     install_vlany_prerequisites
     dialog --title "$TITLE" --msgbox "Packages installed." 5 50
     
-    dialog --title "$TITLE" --infobox "Patching dynamic linker." 3 50 3>&1 1>&2 2>&3
-    patch_dynamic_linker
-    dialog --title "$TITLE" --msgbox "Dynamic linker patched." 5 50
-
+    [ $RESPONSE != 1 ] && { dialog --title "$TITLE" --infobox "Patching dynamic linker." 3 50 3>&1 1>&2 2>&3; patch_dynamic_linker; dialog --title "$TITLE" --msgbox "Dynamic linker patched." 5 50; }
+    
     get_vlany_settings
 
     config_vlany
