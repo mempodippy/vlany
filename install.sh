@@ -49,8 +49,8 @@ read -p "Press enter to continue, or ^C to exit."
 # conditional warnings, credits to a certain individual
 gcc misc/detect_lxc.c -o misc/detect_lxc
 [[ $(misc/detect_lxc) == *"definitely in LXC"* ]] && { read -p "Warning: In an LXC container. Press enter to continue or ^C to exit."; }
-[[ $(misc/detect_openvz.sh) == *"in OpenVZ"* ]] && { read -p "Warning: In an OpenVZ container. Press enter to continue or ^C to exit."; }
 rm misc/detect_lxc
+[[ $(misc/detect_openvz.sh) == *"in OpenVZ"* ]] && { read -p "Warning: In an OpenVZ container. Press enter to continue or ^C to exit."; }
 [ -f `which sash 2>/dev/null || echo "NO"` ] && { read -p "Warning: sash is installed on this box. Press enter to continue or ^C to exit."; }
 [ -d /proc/vz ] && { read -p "Warning: You're attempting to install vlany in an OpenVZ environment. Press enter to continue or ^C to exit."; }
 [ -f /usr/bin/lveps ] && { read -p "Warning: You're attempting to install vlany in a CloudLinux LVE. Press enter to continue or ^C to exit."; }
