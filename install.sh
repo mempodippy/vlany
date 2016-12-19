@@ -70,8 +70,6 @@ patch_dynamic_linker ()
     misc/patch_ld.py &>/dev/null
     NEW_PRELOAD=$(cat new_preload)
     rm new_preload
-    
-    [ -f /libx32/ld-linux-x32.so* ] && { rm /libx32/ld-linux-x32.so.2 && ln -sf /libx32/ld-2.*.so /libx32/ld-linux-x32.so.2; }
 }
 
 install_vlany_prerequisites ()
