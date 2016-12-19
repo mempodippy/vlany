@@ -247,7 +247,7 @@ config_vlany ()
 
 compile_vlany ()
 {
-    WARNING_FLAGS="-Wall -Wno-comment -Wunused-but-set-variable -Wno-unused-result"
+    WARNING_FLAGS="-Wall -Wno-comment -Wnounused-but-set-variable -Wno-unused-result"
     OPTIMIZATION_FLAGS="-O0"
     OPTIONS="-fomit-frame-pointer -fPIC"
     LINKER_OPTIONS="-Wl,--build-id=none"
