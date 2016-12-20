@@ -40,10 +40,10 @@ Regular tui installation on a Debian 8 box using an suid binary to escalate priv
   * vlany-exclusive commands
 
 ##Known bugs
+*Any bugs listed here will be present until a resolve has been reached. If a bug has been reported as an [issue](https://github.com/mempodippy/vlany/issues), the corresponding issue will also be linked in the bug listing. Should a bug be resolved, the listing will be removed from here, and if any issue is still open pertaining to the bug, it will be closed.*
 ###Serious bugs
 > 1. There is ~~currently only~~ one significant bug in vlany, which unfortunately causes the box to be unable to reboot successfully.
-> This bug arises from hide_checks.c @ hidden_xattr. It'll get fixed.
-> 2. vlany fails to install correctly on CentOS
+> 2. vlany [fails to install correctly](https://github.com/mempodippy/vlany/issues/5) on CentOS.
 
 ###Minor bugs
 > 1. There is a [weird bug](https://github.com/mempodippy/vlany/issues/4) where it shows a duplicate line in the w / who commands. This is potentially a way to detect a vlany installation on a box.
