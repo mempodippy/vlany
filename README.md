@@ -46,7 +46,7 @@ Regular tui installation on a Debian 8 box using an suid binary to escalate priv
 > 2. vlany [fails to install correctly](https://github.com/mempodippy/vlany/issues/5) on CentOS.
 
 ###Minor bugs
-> 1. There is a [weird bug](https://github.com/mempodippy/vlany/issues/4) where it shows a duplicate line in the w / who commands. This is potentially a way to detect a vlany installation on a box.
+No minor bugs present as of now. Please use the [issues page](https://github.com/mempodippy/vlany/issues) to report any bugs that may arise while using vlany.
 
 ##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
 **NOTE:** vlany is in active development. Changes are constantly being made to this repository, so beware that vlany is very experimental.
