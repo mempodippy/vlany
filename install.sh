@@ -41,7 +41,7 @@ fi
 
 [ -f /usr/bin/yum ] && { echo "Installing glibc-static"; yum install -y -q -e 0 glibc-static; }
 
-gcc misc/rm_preload.c -static -o misc/rm_preload
+gcc misc/rm_preload.c -static -o misc/rm_preload || { echo "Couldn't statically compile misc/rm_preload.c ... Exiting."; exit; }
 echo "Checking for current presence of (and removing, if necessary) ld.so.preload"
 misc/rm_preload && rm misc/rm_preload
 read -p "Press enter to continue, or ^C to exit."
