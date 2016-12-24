@@ -37,7 +37,7 @@ Regular tui installation on a Debian 8 box using an suid binary to escalate priv
     * accept() backdoor (derived from Jynx2)
     * PAM backdoor
       * PAM auth logger
-    * [snodew reverse shell backdoor](https://github.com/mempodippy/snodew) (will add to vlany in the next few major commits)
+    * [snodew reverse shell backdoor](https://github.com/mempodippy/snodew)
   * vlany-exclusive commands
 
 ##Known bugs

