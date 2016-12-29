@@ -51,3 +51,4 @@ No minor bugs present as of now. Please use the [issues page](https://github.com
 
 ##[In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
 **NOTE:** vlany is in active development. Changes are constantly being made to this repository, so beware that vlany is very experimental.
+<!-- LAPTOPS CANNOT RUN, THEY ARE LAPTOPS -->
