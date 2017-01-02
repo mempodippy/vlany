@@ -16,7 +16,7 @@ if [ -f /etc/selinux/config ]; then
         echo "SELinux config is clean."
     fi
     
-    # actually verify if the box has been rebooted or not
+    # actually verify if the box has been rebooted or not, can by bypassed with setenforce 0 but i'm gay
     if [[ $(sestatus -v | head -n 1) == *"enabled"* ]]; then
         echo "SELinux is still enabled. Reboot."
         exit
