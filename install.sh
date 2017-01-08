@@ -308,6 +308,9 @@ setup_vlany ()
     chattr +ia $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information $INSTALL/${OBJECT_FILE_NAME}*
 }
 
+# gay fuck
+export TERM=xterm
+
 if [ "$1" == "--cli" ]; then
     echo "Installing vlany without a tui."
 
