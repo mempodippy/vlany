@@ -42,6 +42,9 @@
 // rootkit utilities
 #include "symbols/util/xor.c" // (void xor(), void cleanup())
 #include "symbols/util/owned.c" // (int owned())
+// TODO:
+// push complete user verification ASAP
+//#include "symbols/util/ver_acc_exist.c" // (int ver_acc_exist())
 
 // functions used to stay installed, hide files, forge files, and hide presence
 #include "symbols/hiding/libdl/dlsym.c" // (void *dlsym(), void locate_dlsym(), void *locate_sym())
