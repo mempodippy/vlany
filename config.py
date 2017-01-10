@@ -125,30 +125,36 @@ PAM_DEBUG = False
 VERBOSE_DEBUG = False
 
 SHELL_MSG = """
-\033[1m                                                                                
-                                                                                
-                                   `::-.                                        
-                                   `+sss:   `````                               
-                           `.--:-```:mMMo .osoooy/`                             
-                       `-/oshhdddhy//mMMy`yNNm//yho/:-``                        
-             `.-:-..--:oyysshmmNmmdmhsNNh.dNNh.oNMNhoo/ss/.                     
-        `-//:+hddy/oo+dms/ohmMNNmdyso+yhhohdmosNNNmy///osyo:.                   
-  `+o/-/yhh+-::---...:hmdshmNMMNhyshddmmdy+ooohNNdmNNds+/:-oh:`                 
-   ./+/os+/:::::::/::+hhyhdmNNNmhsoshssso+yydhydmhoydy/++:ohdy+/.               
-                ``-ys:---:/oydddh//ohhddmdsshy/+dh+:+.```-/sdmhs+`              
-                 `omy`   `..:+oshdhhmNNmmh+/+ho+o//ydo.`````./o/:s:`            
-                 -hd.``..-::::-/yhh+ohhhyysooohmd+/+s+::-.`   ``.+hho.          
-              -ohh+:-::-..``` `-/+/`.-//+sdmdsohs+/:::hds-.`      `/oos/.       
-             `++/-.```         :h+`   `.-:shyo:/hdo//-:sdo`         `-ohh/      
-                              -hm:    `...:++/``hNh-`  `..             `.`      
-                              ohy`  ```    -dy..:yh-                            
-                             `yh:-:-`      /mm-``.`                             
-                             /Nm/.`        -yy/```                              
-                             .o-`           -md+`                               
-                                             -dm-                               
-                                               .
-      
-      
+\033[1m                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                  ``                                            
+                                  +s/`                                          
+                     `..---:/:-`  -oys`     ...`                                
+                    :soo++++/:sy:  /hy`   -ossyyyo:`           ```              
+                  `+o-``     `:hh/ +hy   /sysydddddo. `-/++oooooss+:-`          
+                 `shs++os+/:.`.smh:odh:oydddhddhdmmdy+hds+o+-..````.-:--`       
+               .+hdho-oddmmmmds+mmhommdmmNmNmhhmNNmdmmmdyosyso/-.`              
+           `-+yhho-`-ydo-+sdmNMNNNNmNmNmmNNdmdyhmdmNNmms-``.-/+osyo:`           
+         `/ydy+-`  `ydy`  `.:+ydmdmNNsmNmhmmNmmdhmNNmh/`       `.-:+s:          
+        :yo:-`     +md:       ``.-ysddmddhNNmmNNNNNNmhyso+-.`       -++.        
+      `+h+`       -dd/            :o/oooydhdyhmNNNmmNNdhyssyhs.       -+/`      
+     -so.        .hmo`            `s`   -os:``-////smm:````.+hh+.       `::`    
+    -s:          smy.              .`   +/`        smh.      .+ddo.       ``    
+  `:/`          -dh:                    `         `hNy         .odh/            
+  -.            +y.                               .dNo           -/h/           
+               .yo`                               -mN/             od.          
+               /y-                                /mm-             .hs          
+              `s+                                 +dy`              -d-         
+              .s-                                `oh-                +/         
+              :+`                                :d+                 .+         
+              /.                                `yy`                  :         
+             `+                                 +h-                             
+             --                                .h/                              
+                                               +/                               
+                                              -+                                
+                                             `o`                                
+                                              `                                                                                                                 
+
+
 \033[0m"""
 
 HELP_MSG = """\033[1m// execve commands\033[0m
