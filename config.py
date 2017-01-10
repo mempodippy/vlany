@@ -374,7 +374,7 @@ alias ls='ls --color=auto'
 alias l=ls
 alias ll='ls --color=auto -AlFhn'
 alias rm='rm -rfv'
-alias nano='nano -ELSiqt'
+alias nano='nano -ELSit'
 alias lsblk='lsblk --fs --all --paths --perms'
 
 alias apt-get='printf "\\033[31mSee ./help for vlany function apt. (only works on Debian/Ubuntu)\\033[0m\\n"'
@@ -387,7 +387,8 @@ alias unchattr='cd {0}; chattr -ia * &>/dev/null; echo "chattr permissions remov
 alias rechattr='cd {0}; chattr +ia * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
 
 echo -e "\\033[1mLogged login attempts: \\033[1;31m$(grep Username ~/pam_auth_logs 2>/dev/null | wc -l)\\033[0m"
-[ -f `which shred 2>/dev/null || echo "NO"` ] && alias vshred='shred -n 5 --random-source=/dev/urandom -uvz' && echo "shred is available. `alias vshred` made.."
+[ -f `which shred 2>/dev/null || echo "NO"` ] && alias vshred='shred -n 5 --random-source=/dev/urandom -uvz'
+echo "Use 'alias' to view list of all bash aliases."
 """
     fd = open("bashrc", "w")
     fd.write(bash_rc.format(INSTALL))
