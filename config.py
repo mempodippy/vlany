@@ -155,6 +155,7 @@ SHELL_MSG = """
                                               `                                                                                                                 
 
 
+                           Slav knows where you live...
 \033[0m"""
 
 HELP_MSG = """\033[1m// execve commands\033[0m
