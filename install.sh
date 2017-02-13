@@ -24,9 +24,7 @@ if [ -f /etc/selinux/config ]; then
         echo "SELinux is disabled."
     fi
 fi
-if stat /proc/1/exe | grep -q 'systemd'; then
-   echo "You are running on systemd, rebooting may brick the box."
-fi
+[ ! -z "`stat /proc/1/exe | grep 'systemd'`" ] && { echo "This box uses systemd. Reboot brick likely to happen."; read -p "Press enter to continue or ^C to exit."; }
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 if [ ! -f `which gcc 2>/dev/null || echo "NO"` ]; then
     echo "Installing gcc"
