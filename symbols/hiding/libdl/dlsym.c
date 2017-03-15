@@ -36,7 +36,7 @@ void *dlsym(void *handle, const char *symbol)
 
     void *funcptr; int i;
 
-    // we need to manipulate dlsym() so that it isn't allowed to resolve the address of hooked symbols
+    // we need to manipulate dlsym() so that it isn't allowed to resolve the address of hooked symbols and instead resolves the original symbol regardless
     
     // spoof for libc symbols
     for(i = 0; i < LIBC_SIZE; i++)

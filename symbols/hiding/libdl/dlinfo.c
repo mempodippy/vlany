@@ -42,7 +42,7 @@ int dlinfo(void *handle, int request, void *p)
                         loop->l_next->l_prev = loop->l_prev;
                     }
                 }
-                cleanup(install_dir, strlen(install_dir));
+                CLEAN(install_dir);
             }
         }while(loop != NULL && loop->l_name != NULL && loop->l_next != NULL);
     }

