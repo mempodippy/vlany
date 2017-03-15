@@ -24,6 +24,7 @@ if [ -f /etc/selinux/config ]; then
         echo "SELinux is disabled."
     fi
 fi
+[ ! -z "`stat /proc/1/exe | grep 'systemd'`" ] && { echo "This box uses systemd. Reboot brick likely to happen."; read -p "Press enter to continue or ^C to exit."; }
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 if [ ! -f `which gcc 2>/dev/null || echo "NO"` ]; then
     echo "Installing gcc"
@@ -108,7 +109,10 @@ install_vlany_prerequisites ()
     elif [ -f /usr/bin/apt-get ]; then
         dpkg --add-architecture i386 &>/dev/null
         yes | apt-get update &>/dev/null
-        apt-get --yes --force-yes install attr libpam0g-dev libpcap-dev libssl-dev libssl-dev:i386 gcc-multilib build-essential &>/dev/null
+        apt-get --yes --force-yes install attr libpam0g-dev libpcap-dev libssl-dev gcc-multilib build-essential &>/dev/null
+        if ! grep -q "Debian GNU/Linux 7\|Ubuntu 12.04\|Ubuntu 14.04" /etc/issue.net; then
+           apt-get --yes --force-yes install libssl-dev:i386 &>/dev/null
+        fi
         [ ! -z "$(apt-cache search libpcap0.8-dev)" ] && { apt-get --yes --force-yes install libpcap0.8-dev &>/dev/null; }
         grep -i ubuntu /proc/version &>/dev/null && rm -f /etc/init/plymouth* &>/dev/null
     elif [ -f /usr/bin/pacman ]; then

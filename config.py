@@ -158,8 +158,7 @@ SHELL_MSG = """
                                               -+                                
                                              `o`                                
                                               `                                                                                                                 
-
-
+                                              
 \033[0m"""
 
 # i feel like this is kind of useless now... may remove in time
