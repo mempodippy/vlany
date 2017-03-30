@@ -45,9 +45,6 @@ Regular tui installation on a Debian 8 box using an suid binary to escalate priv
 ### Serious bugs
 > 1. vlany [fails to install](https://github.com/mempodippy/vlany/issues/5) correctly on anything above CentOS 6.6.
 
-### Minor bugs
-> 1. execve commands are still undergoing changes. I know they don't work, but I'm considering using smaller, easier scripts instead of hard coding commands into vlany. (no longer considering, this is a wip)
-
 ## [In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
 **NOTE:** vlany is in active development. Changes are constantly being made to this repository, so beware that vlany is very experimental.
 <!-- LAPTOPS CANNOT RUN, THEY ARE LAPTOPS -->
