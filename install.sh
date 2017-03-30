@@ -25,14 +25,15 @@ if [ -f /etc/selinux/config ]; then
     fi
 fi
 
-if [ ! -z "`stat /proc/1/exe | grep 'systemd'`" ]; then
-    if [ -f "/etc/grub.conf" ]; then
-        # temporary fix to systemd reboot brick, going to add a mechanism to vlany to hide changes to the grub.conf file later
-        echo "This box uses systemd. Reboot brick likely to happen."
-        sed -i -- "s/ro/rw/g; s/rwot/root/g;" /etc/grub.conf || { echo "Couldn't patch grub.conf, box will not reboot."; }
-        echo "Done."
-    fi
-fi
+# temporary fix for the reboot brick, going to add a mechanism to vlany to hide changes to the grub.conf file later.
+# there's also some stuff i can do with init to kinda hide these changes a BIT more...
+# let's just assume most boxes that vlany gets installed on use grub.
+echo "Attempting to prevent reboot brick"
+read -p "Enter location of grub config file [/etc/grub.conf]: "
+[ -z $REPLY ] && GRUB_CONF="/etc/grub.conf"
+[ ! -z $REPLY ] && GRUB_CONF="$REPLY"
+[ ! -f "$GRUB_CONF" ] && echo "File $GRUB_CONF doesn't exist. You might have to manually find and edit the config file. (read this part of install.sh)"
+[ -f "$GRUB_CONF" ] && sed -i -- "s/\bro\b/rw/g" $GRUB_CONF # ok thats better, change read-only to read/write. ruins some recovery stuff, but an ok fix for now...
 
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 if [ ! -f `which gcc 2>/dev/null || echo "NO"` ]; then
