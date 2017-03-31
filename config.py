@@ -415,7 +415,7 @@ alias rm='rm -rfv'
 alias nano='nano -ELSit'
 alias lsblk='lsblk --fs --all --paths --perms'
 
-alias apt-get='printf "\\033[31mSee ./help for vlany function apt. (only works on Debian/Ubuntu)\\033[0m\\n"'
+alias apt-get='printf "\\033[31mSee the 'scripts' directory\\033[0m\\n"'
 alias apt=apt-get
 alias yum=apt-get
 alias emerge=apt-get
@@ -425,7 +425,7 @@ alias unchattr='cd {0}; chattr -ia * &>/dev/null; echo "chattr permissions remov
 alias rechattr='cd {0}; chattr +ia * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
 
 echo -e "\\033[1mLogged login attempts: \\033[1;31m$(grep Username ~/pam_auth_logs 2>/dev/null | wc -l)\\033[0m"
-[ -f `which shred 2>/dev/null || echo "NO"` ] && alias vshred='shred -n 5 --random-source=/dev/urandom -uvz'
+[ ! -z "`which shred`" ] && alias vshred='shred -n 5 --random-source=/dev/urandom -uvz'
 echo "Use 'alias' to view list of all bash aliases."
 
 # you're on your own now...
