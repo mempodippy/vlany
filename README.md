@@ -43,7 +43,8 @@ Regular tui installation on a Debian 8 box using an suid binary to escalate priv
 ## Known bugs
 *Any bugs listed here will be present until a resolve has been reached. If a bug has been reported as an [issue](https://github.com/mempodippy/vlany/issues), the corresponding issue will also be linked in the bug listing. Should a bug be resolved, the listing will be removed from here, and if any issue is still open pertaining to the bug, it will be closed.*
 ### Serious bugs
-> 1. vlany [fails to install](https://github.com/mempodippy/vlany/issues/5) correctly on anything above CentOS 6.6.
+> 1. There is currently an experimental reboot brick fix. Some systems will brick, others won't. Please report any systems that brick on reboot as an issue, and give the circumstances of the vlany installation in the report.
+> 2. vlany [fails to install](https://github.com/mempodippy/vlany/issues/5) correctly on anything above CentOS 6.6.
 
 ## [In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
 **NOTE:** vlany is in active development. Changes are constantly being made to this repository, so beware that vlany is very experimental.
