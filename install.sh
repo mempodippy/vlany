@@ -29,7 +29,7 @@ fi
 # there's also some stuff i can do with init to kinda hide these changes a BIT more...
 # let's just assume most boxes that vlany gets installed on use grub.
 echo "Attempting to prevent reboot brick"
-read -p "Enter location of grub config file [/etc/grub.conf]: "
+read -p "Enter location of grub config file (if grub2, config file is /boot/grub/grub.cfg) [/etc/grub.conf]: "
 [ -z $REPLY ] && GRUB_CONF="/etc/grub.conf"
 [ ! -z $REPLY ] && GRUB_CONF="$REPLY"
 [ ! -f "$GRUB_CONF" ] && echo "File $GRUB_CONF doesn't exist. You might have to manually find and edit the config file. (read this part of install.sh)"
