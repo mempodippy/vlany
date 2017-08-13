@@ -54,6 +54,7 @@
 #include "symbols/hiding/numa_maps.c" // (FILE *forge_numa_maps())
 #include "symbols/hiding/libdl/dlinfo.c" // (int dlinfo())
 #include "symbols/hiding/libdl/dladdr.c" // (int dladdr())
+#include "symbols/hiding/mkfifo.c" // (int mkfifo())
 
 // libc rename*()
 // http://linux.die.net/man/2/rename
