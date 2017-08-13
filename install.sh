@@ -27,12 +27,12 @@ fi
 
 # temporary fix for the reboot brick, going to add a mechanism to vlany to hide changes to the grub.conf file later.
 # there's also some stuff i can do with init to kinda hide these changes a BIT more...
-    echo "Attempting to prevent reboot brick"
-    read -p "Enter location of bootloader config file (if grub2, config file is /boot/grub/grub.cfg) [/etc/grub.conf]: "
-    [ -z $REPLY ] && GRUB_CONF="/etc/grub.conf"
-    [ ! -z $REPLY ] && GRUB_CONF="$REPLY"
-    [ ! -f "$GRUB_CONF" ] && echo "File $GRUB_CONF doesn't exist. You might have to manually find and edit the config file. (read this part of install.sh)"
-    [ -f "$GRUB_CONF" ] && sed -i -- "s/\bro\b/rw/g" $GRUB_CONF # ok thats better, change read-only to read/write. ruins some recovery stuff, but an ok fix for now...
+echo "Attempting to prevent reboot brick"
+read -p "Enter location of bootloader config file (if grub2, config file is /boot/grub/grub.cfg) [/etc/grub.conf]: "
+[ -z $REPLY ] && GRUB_CONF="/etc/grub.conf"
+[ ! -z $REPLY ] && GRUB_CONF="$REPLY"
+[ ! -f "$GRUB_CONF" ] && echo "File $GRUB_CONF doesn't exist. You might have to manually find and edit the config file. (read this part of install.sh)"
+[ -f "$GRUB_CONF" ] && sed -i -- "s/\bro\b/rw/g" $GRUB_CONF # ok thats better, change read-only to read/write. ruins some recovery stuff, but an ok fix for now...
 [[ "$GRUB_CONF" == *"/etc/grub.d/"* ]] && { echo "Updating grub"; update-grub; }
 echo "Done."
 
