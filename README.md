@@ -46,6 +46,6 @@ Regular tui installation on a Debian 8 box using an suid binary to escalate priv
 > 1. There is currently an experimental reboot brick fix. Some systems will brick, others won't. Please report any systems that brick on reboot as an issue, and give the circumstances of the vlany installation in the report. Take a look at the Issues page to see if a similar issue has already been submitted.
 > 2. vlany [fails to install](https://github.com/mempodippy/vlany/issues/5) correctly on anything above CentOS 6.6.
 
-## [In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README) (very detailed but not maintained)</br>
+## [In-depth README.txt](https://raw.githubusercontent.com/mempodippy/vlany/master/README_old) (very detailed but not maintained)</br>
 **NOTE:** vlany is in active development. Changes are constantly being made to this repository, so beware that vlany is very experimental.
 <!-- LAPTOPS CANNOT RUN, THEY ARE LAPTOPS -->
