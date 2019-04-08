@@ -1,3 +1,6 @@
+# VLANY IS NO LONGER MAINTAINED.
+# https://github.com/naworkcaj/bdvl IS. PLEASE REFER TO THAT FOR CONSTANT UPDATES.
+
 # vlany ([wiki](https://github.com/mempodippy/vlany/wiki))
 #### *vlany is a Linux LD_PRELOAD rootkit*.</br>
  * *[List of features](https://github.com/mempodippy/vlany/wiki/Features)*</br>
